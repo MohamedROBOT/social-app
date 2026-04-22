@@ -17,6 +17,8 @@ const bootstrap = async () => {
     //middlwares
     app.use(express_1.default.json());
     app.use("/auth", modules_1.authRouter);
+    app.use("/post", modules_1.postRouter);
+    app.use("/comment", modules_1.commentRouter);
     //note: error handle must be the last middleware in the stack because it will catch any error thrown from previous middlewares or routes
     //global error handler middleware
     app.use((error, req, res, next) => {
