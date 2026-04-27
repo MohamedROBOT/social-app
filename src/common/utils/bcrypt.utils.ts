@@ -16,5 +16,5 @@ export const hash = async (password: string) => {
  * @returns promise of boolean
  */
 export const compare = async (password: string, hashedPassword: string) => {
-  bcrypt.compare(password, hashedPassword);
+  return bcrypt.compare(password, hashedPassword);
 };

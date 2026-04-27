@@ -16,10 +16,7 @@ router.post(
     //use manual userId
    await addReaction(req.body, new Types.ObjectId("69dfad1d0be24b44e159fa94"), commentRepository);
 
-    res.status(204).json({
-      success: true,
-      message: "reaction added successfully",
-    });
+     res.sendStatus(204)
   },
 );
 
@@ -37,12 +34,18 @@ router.post(
       new Types.ObjectId("69dfad1d0be24b44e159fa94"),
     );
 
-    res.status(204).json({
-      success: true,
-      message: "Comment added successfully",
-    });
+    res.sendStatus(204)
   },
 );
 
-
+router.get("/:postId{/:parentId}", async (req: Request, res: Response, next: NextFunction) => {
+ const comments = await commentService.getAll(req.params);
+ res.status(200).json({
+  success: true,
+  message: "Comments fetched successfully",
+  data: {
+    comments
+  }
+ })
+})
 export default router;

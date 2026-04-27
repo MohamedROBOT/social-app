@@ -8,6 +8,14 @@ const auth_service_1 = __importDefault(require("./auth.service"));
 const auth_validation_1 = require("./auth.validation");
 const middleware_1 = require("../../middleware");
 const router = (0, express_1.Router)();
+router.post("/signin", async (req, res, next) => {
+    const tokens = await auth_service_1.default.login(req.body);
+    res.status(200).json({
+        success: true,
+        message: "Login successful",
+        ...tokens,
+    });
+});
 router.post("/signup", (0, middleware_1.isValid)(auth_validation_1.signupSchema), async (req, res, next) => {
     //service
     await auth_service_1.default.signup(req.body);
@@ -39,7 +47,7 @@ router.patch("/reset-password", async (req, res, next) => {
     await auth_service_1.default.resetPassword(req.body);
     res.status(200).json({
         success: true,
-        message: "password has been reset successfully"
+        message: "password has been reset successfully",
     });
 });
 exports.default = router;

@@ -22,7 +22,7 @@ export interface VerifyAccountDTO {
 export interface SendOtpDTO {
   email: string
 }
-export interface LoginDTO {
+export interface SigninDTO {
   email: string;
   password: string;
 }

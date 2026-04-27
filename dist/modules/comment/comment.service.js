@@ -32,5 +32,14 @@ class CommentService {
             userId,
         });
     }
+    async getAll(params) {
+        const comments = await this.commentRepository.getAll({
+            postId: params.postId,
+            parentId: params.parentId,
+        });
+        if (!comments || comments.length === 0)
+            throw new common_1.NotFoundException("comments not found");
+        return comments;
+    }
 }
 exports.default = new CommentService(new post_repository_1.PostRepository(), new comment_repository_1.CommentRepository());

@@ -19,3 +19,4 @@ __exportStar(require("./user.interface"), exports);
 __exportStar(require("./post.interface"), exports);
 __exportStar(require("./user-reactions.interface"), exports);
 __exportStar(require("./comment.interface"), exports);
+__exportStar(require("./jwt.interface"), exports);

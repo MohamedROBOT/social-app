@@ -35,7 +35,28 @@ class AuthService {
         await (0, redis_service_1.setIntoCache)(`${email}:otp`, otp, 3 * 60);
         (0, redis_service_1.setIntoCache)(email, JSON.stringify(signupDTO), 3 * 24 * 60 * 60);
     }
-    login(loginDTO) { }
+    async login(loginDTO) {
+        //check email existence in db
+        const userExist = await this.userRepository.getOne({
+            email: loginDTO.email
+        });
+        //check matched password
+        const isMatched = await (0, common_1.compare)(loginDTO.password, userExist?.password);
+        //avoid hacking
+        if (!userExist)
+            throw new common_1.BadRequestException("invalid credentials");
+        if (!isMatched)
+            throw new common_1.BadRequestException("invalid credentials");
+        //check account verification
+        //generate tokens
+        const tokens = (0, common_1.generateTokens)({
+            sub: userExist._id,
+            email: userExist.email,
+            role: userExist.role
+        });
+        //set refresh token into redis
+        return tokens;
+    }
     async sendOTP(sendOtpDTO) {
         //check email existence in db
         const userExist = await this.userRepository.getOne({

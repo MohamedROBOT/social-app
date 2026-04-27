@@ -1,12 +1,11 @@
 import { Types } from "mongoose";
 import { CreateCommentDTO } from "./comment.dto";
 import { PostRepository } from "../../DB/models/post/post.repository";
-import { NotFoundException } from "../../common";
+import { NotFoundException, ParamsDTO } from "../../common";
 import { CommentRepository } from "../../DB/models/comment/comment.repository";
 
 class CommentService {
   constructor(
-
     private readonly postRepository: PostRepository,
     private readonly commentRepository: CommentRepository,
   ) {}
@@ -29,18 +28,27 @@ class CommentService {
       // if no throw error
       if (!parentCommentExist) throw new NotFoundException("comment not found");
     }
-    
+
     // if yes create comment
     return this.commentRepository.create({
-        
       ...createCommentDTO,
       ...params, //postId, parentId if exist
       userId,
     });
   }
+
+  async getAll(params: any) {
+    const comments = await this.commentRepository.getAll({
+      postId: params.postId,
+      parentId: params.parentId,
+    });
+    if (!comments || comments.length === 0)
+      throw new NotFoundException("comments not found");
+    return comments;
+  }
 }
 
 export default new CommentService(
-    new PostRepository(),
-    new CommentRepository(),
-)
+  new PostRepository(),
+  new CommentRepository(),
+);

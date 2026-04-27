@@ -22,6 +22,6 @@ exports.hash = hash;
  * @returns promise of boolean
  */
 const compare = async (password, hashedPassword) => {
-    bcrypt_1.default.compare(password, hashedPassword);
+    return bcrypt_1.default.compare(password, hashedPassword);
 };
 exports.compare = compare;

@@ -17,10 +17,7 @@ async (req, res, next) => {
     console.log(req.body);
     //use manual userId
     await (0, common_1.addReaction)(req.body, new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"), comment_repository_1.commentRepository);
-    res.status(204).json({
-        success: true,
-        message: "reaction added successfully",
-    });
+    res.sendStatus(204);
 });
 router.post("/:postId{/:parentId}", 
 //authentication middleware
@@ -29,9 +26,16 @@ router.post("/:postId{/:parentId}",
 async (req, res, next) => {
     //use manual userId
     await comment_service_1.default.create(req.body, req.params, new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"));
-    res.status(204).json({
+    res.sendStatus(204);
+});
+router.get("/:postId{/:parentId}", async (req, res, next) => {
+    const comments = await comment_service_1.default.getAll(req.params);
+    res.status(200).json({
         success: true,
-        message: "Comment added successfully",
+        message: "Comments fetched successfully",
+        data: {
+            comments
+        }
     });
 });
 exports.default = router;

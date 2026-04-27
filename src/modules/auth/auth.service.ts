@@ -2,9 +2,11 @@
 
 import {
   BadRequestException,
+  compare,
   ConflictException,
   encryption,
   generateOTP,
+  generateTokens,
   hash,
   NotFoundException,
 } from "../../common";
@@ -17,9 +19,10 @@ import {
   setIntoCache,
 } from "../../DB/redis.service";
 import {
-  LoginDTO,
+
   ResetPasswordDTO,
   SendOtpDTO,
+  SigninDTO,
   SignupDTO,
   VerifyAccountDTO,
 } from "./auth.dto";
@@ -55,7 +58,31 @@ class AuthService {
     setIntoCache(email, JSON.stringify(signupDTO), 3 * 24 * 60 * 60);
   }
 
-  login(loginDTO: LoginDTO) {}
+  async login(loginDTO: SigninDTO) {
+    //check email existence in db
+    const userExist =await this.userRepository.getOne({
+      email: loginDTO.email
+    })
+    //check matched password
+    const isMatched = await compare(loginDTO.password, userExist?.password as string)
+
+    //avoid hacking
+    if(!userExist) throw new BadRequestException("invalid credentials");
+    if(!isMatched) throw new BadRequestException("invalid credentials");
+
+    //check account verification
+
+    //generate tokens
+   const tokens = generateTokens({
+      sub: userExist._id,
+      email: userExist.email,
+      role: userExist.role
+    });
+
+    //set refresh token into redis
+
+    return tokens
+  }
 
   async sendOTP(sendOtpDTO: SendOtpDTO) {
     //check email existence in db
