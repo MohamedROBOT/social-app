@@ -3,11 +3,15 @@ import { Model, ProjectionType, QueryFilter, QueryOptions, UpdateQuery } from "m
 //generic repository which is abstracted
 export abstract class AbstractRepository<T> {
   constructor(private _model: Model<T>) {}
-  /**
+ 
+//access private property
+  get model() {
+    return this._model;
+  }
+ /**
    create comment
     @param item is a generic data which is passed to DB
    */
-
   public async create(item: Partial<T>) {
     const doc = new this._model(item);
     return doc.save();

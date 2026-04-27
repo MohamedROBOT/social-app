@@ -10,7 +10,8 @@ const toModel = (model) => {
             return enums_1.ON_MODEL.Post;
         case "comments":
             return enums_1.ON_MODEL.Comment;
-        default: throw new utils_1.BadRequestException("invalid model");
+        default:
+            throw new utils_1.BadRequestException("invalid model");
     }
 };
 const addReaction = async (addReactionDTO, userId, repo) => {
@@ -20,7 +21,7 @@ const addReaction = async (addReactionDTO, userId, repo) => {
         _id: addReactionDTO.id,
     });
     if (!docExist)
-        throw new utils_1.NotFoundException("post not found");
+        throw new utils_1.NotFoundException(`${repo.model.modelName} not found`);
     const model = toModel(docExist.collection.name);
     //check user reaction
     const userReaction = await userReactionRepository.getOne({

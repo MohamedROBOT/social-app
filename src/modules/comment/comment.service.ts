@@ -1,7 +1,13 @@
 import { Types } from "mongoose";
 import { CreateCommentDTO } from "./comment.dto";
 import { PostRepository } from "../../DB/models/post/post.repository";
-import { NotFoundException, ParamsDTO } from "../../common";
+import {
+  BadRequestException,
+  IPost,
+  NotFoundException,
+  ParamsDTO,
+  UnAuthorizedException,
+} from "../../common";
 import { CommentRepository } from "../../DB/models/comment/comment.repository";
 
 class CommentService {
@@ -17,14 +23,17 @@ class CommentService {
   ) {
     const { postId, parentId } = params;
     //postId check existence
-    const post = await this.postRepository.getOne({ _id: postId });
-    if (!post) throw new NotFoundException("post not found");
-
+    if (postId) {
+      const post = await this.postRepository.getOne({ _id: postId });
+      if (!post) throw new NotFoundException("post not found");
+    }
+    let parentCommentExist;
     //if parentId => reply check parentId
     if (parentId) {
-      const parentCommentExist = await this.commentRepository.getOne({
+      parentCommentExist = await this.commentRepository.getOne({
         _id: parentId,
       });
+
       // if no throw error
       if (!parentCommentExist) throw new NotFoundException("comment not found");
     }
@@ -34,6 +43,8 @@ class CommentService {
       ...createCommentDTO,
       ...params, //postId, parentId if exist
       userId,
+      //postId might be null so we will define it throught old comment
+      postId: params.postId || parentCommentExist?.postId,
     });
   }
 
@@ -45,6 +56,31 @@ class CommentService {
     if (!comments || comments.length === 0)
       throw new NotFoundException("comments not found");
     return comments;
+  }
+
+  async delete(id: Types.ObjectId, userId: Types.ObjectId) {
+    //check existence
+    const commentExist = await this.commentRepository.getOne(
+      { _id: id },
+      {},
+      { populate: [{ path: "postId" }] },
+    ); //{} | null
+    if (!commentExist) throw new NotFoundException("comment not found");
+    //commentAuthor
+    let commentAuthor = commentExist.userId.toString();
+    //postAuthor
+    let postAuthor = (commentExist.postId as IPost[])[0]?.userId.toString(); //tye assertion
+    const isAllowed = [commentAuthor, postAuthor].includes(userId.toString());
+    if (!isAllowed)
+      throw new UnAuthorizedException(
+        "You are not authorized to delete this comment",
+      );
+    //delete comment
+    return await this.commentRepository.deleteOne({ _id: id });
+
+    //mongoose middleware
+    //document methods => document middlewares
+    //query methods => query middleware
   }
 }
 

@@ -8,7 +8,10 @@ const post_service_1 = __importDefault(require("./post.service"));
 const mongoose_1 = require("mongoose");
 const post_dto_1 = require("./post.dto");
 const middleware_1 = require("../../middleware");
-const router = (0, express_1.Router)();
+const comment_controller_1 = __importDefault(require("../comment/comment.controller"));
+const router = (0, express_1.Router)(); //sub application
+//redirect to another sub application (comment)
+router.use("/:postId/comment", comment_controller_1.default);
 router.post("/", 
 //add authentication middleware here
 (0, middleware_1.isValid)(post_dto_1.createPostSchema), async (req, res, next) => {

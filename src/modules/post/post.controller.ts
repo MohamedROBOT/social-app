@@ -3,7 +3,13 @@ import postService from "./post.service";
 import { Types } from "mongoose";
 import { createPostSchema } from "./post.dto";
 import { isValid } from "../../middleware";
-const router = Router();
+import { default as commentRouter } from "../comment/comment.controller";
+const router = Router(); //sub application
+
+//redirect to another sub application (comment)
+router.use("/:postId/comment", commentRouter);
+
+
 router.post(
   "/",
   //add authentication middleware here

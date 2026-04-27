@@ -42,6 +42,20 @@ const schema = new Schema<IUser>(
     },
   },
   { timestamps: true },
+
 );
+
+
+// schema.pre("save", function(){
+//   //logic before hashing the password
+//   //this refers to document
+  
+// })
+
+// //target document methods
+// schema.pre("updateOne", {document:true, query:false},function(){
+
+// })
+
 export const User = model("User", schema);
 

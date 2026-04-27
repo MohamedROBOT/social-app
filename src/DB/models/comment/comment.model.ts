@@ -29,4 +29,19 @@ const schema = new Schema<IComment>({
     }
 },{timestamps: true})
 
+schema.pre('deleteOne',async function(){
+    let filter = this.getFilter();
+ //find all replies
+
+const replies = await this.model.find({parentId: filter._id}) //array or []
+
+ //if replies >> loop over them and deleteOne
+ if(replies.length > 0){
+     for (const reply of replies) {
+        await this.model.deleteOne({_id: reply._id})
+     }
+ } 
+//return
+})
+
 export const Comment = model("Comment", schema)

@@ -8,18 +8,18 @@ const comment_service_1 = __importDefault(require("./comment.service"));
 const mongoose_1 = require("mongoose");
 const common_1 = require("../../common");
 const comment_repository_1 = require("../../DB/models/comment/comment.repository");
-const router = (0, express_1.Router)();
+const router = (0, express_1.Router)({ mergeParams: true });
 router.post("/add-reaction", 
 //authentication middleware
 //file upload
 //validation layer
 async (req, res, next) => {
-    console.log(req.body);
     //use manual userId
     await (0, common_1.addReaction)(req.body, new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"), comment_repository_1.commentRepository);
     res.sendStatus(204);
 });
-router.post("/:postId{/:parentId}", 
+//merge params
+router.post("{/:parentId}", 
 //authentication middleware
 //file upload
 //validation layer
@@ -34,8 +34,13 @@ router.get("/:postId{/:parentId}", async (req, res, next) => {
         success: true,
         message: "Comments fetched successfully",
         data: {
-            comments
-        }
+            comments,
+        },
     });
+});
+router.delete("/:id", async (req, res, next) => {
+    await comment_service_1.default.delete(new mongoose_1.Types.ObjectId(req.params.id), //type assertion 100% sure
+    new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"));
+    return res.sendStatus(204);
 });
 exports.default = router;

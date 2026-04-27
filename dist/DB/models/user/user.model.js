@@ -43,4 +43,11 @@ const schema = new mongoose_1.Schema({
         default: common_1.SYS_GENDER.male
     },
 }, { timestamps: true });
+// schema.pre("save", function(){
+//   //logic before hashing the password
+//   //this refers to document
+// })
+// //target document methods
+// schema.pre("updateOne", {document:true, query:false},function(){
+// })
 exports.User = (0, mongoose_1.model)("User", schema);
