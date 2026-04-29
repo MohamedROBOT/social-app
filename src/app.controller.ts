@@ -1,7 +1,8 @@
-import express, { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
+import express from 'express';
 import { BadRequestException } from "./common";
 import { connectDB } from "./DB/connection";
-import { authRouter, commentRouter, postRouter } from "./modules";
+import {authRouter, commentRouter, postRouter, requestRouter} from "./modules";
 import { connectRedis } from "./DB/redis.connection";
 export const bootstrap = async () => {
   const port = 3000;
@@ -13,6 +14,7 @@ export const bootstrap = async () => {
   app.use("/auth", authRouter);
   app.use("/post", postRouter);
   app.use("/comment", commentRouter)
+  app.use("/request", requestRouter)
   //note: error handle must be the last middleware in the stack because it will catch any error thrown from previous middlewares or routes
   //global error handler middleware
   app.use((error: Error, req: Request, res: Response, next: NextFunction) => {

@@ -17,7 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./interfaces/"), exports);
 __exportStar(require("./utils"), exports);
 __exportStar(require("./enums"), exports);
-__exportStar(require("./types"), exports);
+__exportStar(require("./types/user.type"), exports);
 __exportStar(require("./constant"), exports);
 __exportStar(require("./dto"), exports);
 __exportStar(require("./service"), exports);

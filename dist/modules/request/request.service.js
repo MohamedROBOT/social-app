@@ -1,0 +1,138 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const request_repository_1 = require("../../DB/models/request/request.repository");
+const common_1 = require("../../common");
+const user_friend_repository_1 = require("../../DB/models/user-friend/user-friend.repository");
+class RequestService {
+    requestRepository;
+    userFriendRepository;
+    constructor(requestRepository, userFriendRepository) {
+        this.requestRepository = requestRepository;
+        this.userFriendRepository = userFriendRepository;
+    }
+    /*
+     * @params userId ==> sender {from token}
+     * @params receiver ==> from params
+     * */
+    async sendRequest(senderId, receiverId) {
+        //sender is the same as receiver
+        if (senderId.toString() === receiverId.toString())
+            throw new common_1.BadRequestException("Not allowed to send request to yourself");
+        //check block users
+        //check user friends or not
+        const userFriendExist = await this.userFriendRepository.getOne({
+            $or: [
+                { user: senderId, friend: receiverId },
+                { user: receiverId, friend: senderId },
+            ],
+        });
+        if (userFriendExist)
+            throw new common_1.BadRequestException("You are already friends");
+        //check sender send request or receiver
+        const requestExist = await this.requestRepository.getOne({
+            $or: [
+                { sender: senderId, receiver: receiverId },
+                { sender: receiverId, receiver: senderId },
+            ],
+        });
+        if (requestExist)
+            throw new common_1.BadRequestException("Request already exists");
+        // create request
+        await this.requestRepository.create({
+            sender: senderId,
+            receiver: receiverId,
+        });
+        // send notification
+    }
+    /*
+     * @params userId ==> user from token
+     * @params id ==> requestId
+     * */
+    async acceptRequest(userId, id) {
+        //check request existence
+        const requestExist = await this.requestRepository.getOne({ _id: id });
+        if (!requestExist)
+            throw new common_1.NotFoundException("Request not found");
+        //if yes, receiver accept request
+        if (!requestExist.receiver.equals(userId))
+            throw new common_1.UnAuthorizedException("You are not authorized to accept request");
+        //delete request from request collection
+        await this.requestRepository.deleteOne({ _id: id });
+        //create user-friend model
+        await this.userFriendRepository.create({
+            user: userId,
+            friend: requestExist.sender,
+        });
+    }
+    /*
+     * @params userId ==> logged in user
+     * @params id ==> request id
+     */
+    async declineRequest(userId, id) {
+        //check request existence
+        const requestExist = await this.requestRepository.getOne({ _id: id });
+        if (!requestExist)
+            throw new common_1.NotFoundException("Request not found");
+        // if yes, check sender or receiver
+        if (!userId.equals(requestExist.sender) ||
+            !userId.equals(requestExist.receiver))
+            throw new common_1.UnAuthorizedException("You are not authorized to decline or cancel request");
+        // delete from request collection
+        await this.requestRepository.deleteOne({ _id: id });
+    }
+    //another solution
+    async declineRequest2(userId, id) {
+        //check request existence
+        const { deletedCount } = await this.requestRepository.deleteOne({
+            _id: id,
+            $or: [
+                {
+                    sender: userId,
+                },
+                {
+                    receiver: userId,
+                },
+            ],
+        });
+        if (deletedCount === 0)
+            throw new common_1.BadRequestException("You are not authorized to decline or cancel request");
+    }
+    /*
+     * @params userId => token
+     * @params id => friendId
+     */
+    async removeFriend(userId, id) {
+        //check user friend existence
+        const userFriendExist = await this.userFriendRepository.getOne({
+            $or: [
+                { user: userId, friend: id },
+                { user: id, friend: userId },
+            ],
+        });
+        if (!userFriendExist)
+            throw new common_1.NotFoundException("Friend not found");
+        //if yes, check user or friend
+        if (!userId.equals(userFriendExist.user) ||
+            !userId.equals(userFriendExist.friend))
+            throw new common_1.UnAuthorizedException("You are not authorized to remove friend");
+        //delete from user-friend collection
+        await this.userFriendRepository.deleteOne({
+            _id: userFriendExist._id,
+        });
+    }
+    async removeFriend2(userId, id) {
+        if (userId.toString() === id.toString())
+            throw new common_1.BadRequestException("Not allowed to remove yourself");
+        //delete from user-friend collection
+        const { deletedCount } = await this.userFriendRepository.deleteOne({
+            $or: [
+                { user: userId, friend: id },
+                { user: id, friend: userId },
+            ],
+        });
+        if (deletedCount === 0)
+            throw new common_1.NotFoundException("You are not friends");
+    }
+}
+//we will apply dependency injection
+exports.default = new RequestService(request_repository_1.requestRepository, user_friend_repository_1.userFriendRepository);

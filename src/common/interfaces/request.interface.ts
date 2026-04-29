@@ -1,22 +1,9 @@
-
-//re-open Request interface from express to add user property
-
-import { IUser } from "./user.interface";
+import { Types } from "mongoose";
 
 
-
-//this is one solution to re-open
-// declare module "express" {
-//   export interface Request {
-//     user?: IUser;
-//   }
-// }
-
-//this is second solution for re-open
-declare module "express-serve-static-core" {
-  interface Request {
-    user: IUser;
-  }
+//request collection not express request!!#!@#!@#!@
+export interface IRequestModel {
+  sender: Types.ObjectId;
+  receiver: Types.ObjectId;
+  
 }
-
-

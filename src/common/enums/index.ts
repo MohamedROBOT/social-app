@@ -28,3 +28,11 @@ export enum ON_MODEL {
   Reel = "Reel",
   Story = "Story"
 }
+
+export enum SYS_USER_RELATION {
+son = 'son',
+sister = 'sister',
+brother ='brother',
+father = 'father',
+mother = 'mother',
+}
