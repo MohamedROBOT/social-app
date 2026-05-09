@@ -10,8 +10,12 @@ import {
   hash,
   NotFoundException,
 } from "../../common";
+import { IMailProvider } from "../../common/mail/mail.interface";
+import nodeMailerProvider from "../../common/mail/nodemailer/init";
 import { sendMail } from "../../common/utils/email.utils";
-import { UserRepository } from "../../DB/models/user/user.repository";
+import userRepository, {
+  UserRepository,
+} from "../../DB/models/user/user.repository";
 
 import {
   deleteFromCache,
@@ -19,7 +23,6 @@ import {
   setIntoCache,
 } from "../../DB/redis.service";
 import {
-
   ResetPasswordDTO,
   SendOtpDTO,
   SigninDTO,
@@ -29,10 +32,10 @@ import {
 
 // single tone design pattern >> singleton from nestjs (class AuthService{})
 class AuthService {
-  private userRepository: UserRepository;
-  constructor() {
-    this.userRepository = new UserRepository();
-  }
+  constructor(
+    private userRepository: UserRepository,
+    private mailProvider: IMailProvider,
+  ) {}
 
   //camelCase : PascalCase
   async signup(signupDTO: SignupDTO) {
@@ -48,40 +51,48 @@ class AuthService {
     //send otp
     const otp = generateOTP();
     //send email
-    sendMail({
-      to: email,
-      subject: "account verification",
-      html: `<h1>${otp}</h1>`,
-    });
+    // sendMail({
+    //   to: email,
+    //   subject: "account verification",
+    //   html: `<h1>${otp}</h1>`,
+    // });
+    await this.mailProvider.send(
+      email,
+      "account verification",
+      `<h1>${otp}</h1>`,
+    );
     //create user into redis
-    await setIntoCache(`${email}:otp`, otp, 3 * 60);
-    setIntoCache(email, JSON.stringify(signupDTO), 3 * 24 * 60 * 60);
+    await setIntoCache(`${email}:otp`, otp, 3 * 60); // 3 min
+   await setIntoCache(email, JSON.stringify(signupDTO), 3 * 24 * 60 * 60); // 3 days
   }
 
   async login(loginDTO: SigninDTO) {
     //check email existence in db
-    const userExist =await this.userRepository.getOne({
-      email: loginDTO.email
-    })
+    const userExist = await this.userRepository.getOne({
+      email: loginDTO.email,
+    });
     //check matched password
-    const isMatched = await compare(loginDTO.password, userExist?.password as string)
+    const isMatched = await compare(
+      loginDTO.password,
+      userExist?.password as string,
+    );
 
     //avoid hacking
-    if(!userExist) throw new BadRequestException("invalid credentials");
-    if(!isMatched) throw new BadRequestException("invalid credentials");
+    if (!userExist) throw new BadRequestException("invalid credentials");
+    if (!isMatched) throw new BadRequestException("invalid credentials");
 
     //check account verification
 
     //generate tokens
-   const tokens = generateTokens({
+    const tokens = generateTokens({
       sub: userExist._id,
       email: userExist.email,
-      role: userExist.role
+      role: userExist.role,
     });
 
     //set refresh token into redis
 
-    return tokens
+    return tokens;
   }
 
   async sendOTP(sendOtpDTO: SendOtpDTO) {
@@ -145,4 +156,4 @@ class AuthService {
   }
 }
 
-export default new AuthService();
+export default new AuthService(userRepository, nodeMailerProvider);

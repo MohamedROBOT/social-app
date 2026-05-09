@@ -1,15 +1,21 @@
 "use strict";
 // design pattern from nestjs >> dependency injection
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("../../common");
+const init_1 = __importDefault(require("../../common/mail/nodemailer/init"));
 const email_utils_1 = require("../../common/utils/email.utils");
-const user_repository_1 = require("../../DB/models/user/user.repository");
+const user_repository_1 = __importDefault(require("../../DB/models/user/user.repository"));
 const redis_service_1 = require("../../DB/redis.service");
 // single tone design pattern >> singleton from nestjs (class AuthService{})
 class AuthService {
     userRepository;
-    constructor() {
-        this.userRepository = new user_repository_1.UserRepository();
+    mailProvider;
+    constructor(userRepository, mailProvider) {
+        this.userRepository = userRepository;
+        this.mailProvider = mailProvider;
     }
     //camelCase : PascalCase
     async signup(signupDTO) {
@@ -26,19 +32,20 @@ class AuthService {
         //send otp
         const otp = (0, common_1.generateOTP)();
         //send email
-        (0, email_utils_1.sendMail)({
-            to: email,
-            subject: "account verification",
-            html: `<h1>${otp}</h1>`,
-        });
+        // sendMail({
+        //   to: email,
+        //   subject: "account verification",
+        //   html: `<h1>${otp}</h1>`,
+        // });
+        await this.mailProvider.send(email, "account verification", `<h1>${otp}</h1>`);
         //create user into redis
-        await (0, redis_service_1.setIntoCache)(`${email}:otp`, otp, 3 * 60);
-        (0, redis_service_1.setIntoCache)(email, JSON.stringify(signupDTO), 3 * 24 * 60 * 60);
+        await (0, redis_service_1.setIntoCache)(`${email}:otp`, otp, 3 * 60); // 3 min
+        await (0, redis_service_1.setIntoCache)(email, JSON.stringify(signupDTO), 3 * 24 * 60 * 60); // 3 days
     }
     async login(loginDTO) {
         //check email existence in db
         const userExist = await this.userRepository.getOne({
-            email: loginDTO.email
+            email: loginDTO.email,
         });
         //check matched password
         const isMatched = await (0, common_1.compare)(loginDTO.password, userExist?.password);
@@ -52,7 +59,7 @@ class AuthService {
         const tokens = (0, common_1.generateTokens)({
             sub: userExist._id,
             email: userExist.email,
-            role: userExist.role
+            role: userExist.role,
         });
         //set refresh token into redis
         return tokens;
@@ -116,4 +123,4 @@ class AuthService {
         await (0, redis_service_1.deleteFromCache)(email);
     }
 }
-exports.default = new AuthService();
+exports.default = new AuthService(user_repository_1.default, init_1.default);

@@ -8,5 +8,5 @@ export class UserRepository extends AbstractRepository<IUser> {
   }
 }
 
-export const userRepository = new UserRepository();
-
+export default new UserRepository();
+//export const userRepository = nwe UserRepository();
