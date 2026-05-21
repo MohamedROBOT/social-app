@@ -1,0 +1,110 @@
+#grapqlObjectType >> 3 properties name, description?, fields
+query {
+    #RootQuery
+    #each field has 2 properies => type, resolve
+    user {#UserQuery
+        #grapqlObjectType >> 3 properties name, description?, fields
+        id
+        name
+        email
+        phoneNumber
+        password
+        age
+        isEmailVerified #graphqlBoolean
+    },
+    #grapqlObjectType  >> 3 properties name, description?, fields
+    product{
+        #ProductQuery
+        id  #graphqlId
+        name #graphqlString
+        price #graphqlInteger or Float
+        discount #graphqlInteger or Float
+        image #graphqlString
+        coverImages #graphqlList
+    }
+    #grapqlObjectType
+    category{
+        #CategoryQuery
+        id
+        name
+        logo
+        products(count:5, cid:"123456")  { #args
+            id
+            name
+            price
+            brand{
+                id
+                name
+                logo
+            }
+        }
+
+
+
+
+    }
+    reviews(count:3){
+        id
+        text
+        rate
+        user{
+            id
+            name
+            profilePic
+
+        }
+    }
+}
+mutation{
+    addProduct(name:"iphone17",price:123456, cid:"123456",bid:"12345", seller:"12345", discount:50){
+        id  #graphqlId
+        name #graphqlString
+        price #graphqlInteger or Float
+        discount #graphqlInteger or Float
+        image #graphqlString
+        coverImages #graphqlList
+        #grapqlObjectType
+        category{
+            id
+            name
+            logo
+            products(count:5, cid:"123456")  { #args
+                id
+                name
+                price
+            }
+        }
+        brand{
+            id
+            name
+            logo
+        }
+    }
+    updateProduct(name:"iphone17",price:123456, cid:"123456",bid:"12345", seller:"12345", discount:50){
+        id  #graphqlId
+        name #graphqlString
+        price #graphqlInteger or Float
+        discount #graphqlInteger or Float
+        image #graphqlString
+        coverImages #graphqlList
+        #grapqlObjectType
+        category{
+            id
+            name
+            logo
+            products(count:5, cid:"123456")  { #args
+                id
+                name
+                price
+            }
+        }
+        brand{
+            id
+            name
+            logo
+        }
+    }
+    deleteProduct(id:"1"){
+        deleted
+    }
+}

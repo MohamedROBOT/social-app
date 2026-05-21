@@ -7,6 +7,13 @@ import {connectRedis} from "./DB/redis.connection";
 import s3CloudProvider from "./common/cloud/s3/init";
 import {pipeline} from "node:stream";
 import {promisify} from "node:util";
+import cors from 'cors'
+import {createHandler} from "graphql-http/lib/use/express";
+import {GraphQLFloat, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLSchema, GraphQLString} from "graphql/type";
+import {UserType} from "./modules/user/graphql/user.type";
+import {PostType} from "./modules/post/graphql/post.type";
+import {postMutation, postQuery} from "./modules/post/graphql/post.gql";
+import {userMutation, userQuery} from "./modules/user/graphql/user.gql";
 
 const pipelinePromise = promisify(pipeline)
 
@@ -19,20 +26,49 @@ const bootstrap = async () => {
     app.get('/uploads/*paths', async (req: Request, res: Response, next: NextFunction) => {
         //assert it to string[]
         let key = (req.params.paths as string[]).join('/')
-      const fileExist = await s3CloudProvider.getFile(key)
-        if(!fileExist) throw new NotFoundException("File not found")
+        const fileExist = await s3CloudProvider.getFile(key)
+        if (!fileExist) throw new NotFoundException("File not found")
         //file is readStream and res is writeStream so we use pipeline
-       await pipelinePromise(fileExist, res)
+        await pipelinePromise(fileExist, res)
 
 
     })
     //middlewares
+    let query = new GraphQLObjectType({
+        name: "RootQuery",
+        fields: {
+          ...userQuery,
+            ...postQuery
+            // category: {
+            //     type, resolve
+            // },
+            // review: {
+            //     type, resolve
+            // }
+        }
+    })
+    let mutation = new GraphQLObjectType({
+        name: "RootMutation",
+        fields: {
+            ...userMutation,
+            ...postMutation
+        }
+    })
+    let schema = new GraphQLSchema({
+        query,
+         mutation,
+        //  subscription
+    })
+    app.all('/graphql', createHandler({schema}))
     app.use(express.json());
+    app.use(cors({origin: "*"}))
+    //routes
     app.use("/auth", authRouter);
     app.use("/post", postRouter);
     app.use("/comment", commentRouter)
     app.use("/request", requestRouter)
     app.use("/user", userRouter)
+
     //note: error handle must be the last middleware in the stack because it will catch any error thrown from previous middlewares or routes
     //global error handler middleware
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {

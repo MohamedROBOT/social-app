@@ -11,6 +11,11 @@ const redis_connection_1 = require("./DB/redis.connection");
 const init_1 = __importDefault(require("./common/cloud/s3/init"));
 const node_stream_1 = require("node:stream");
 const node_util_1 = require("node:util");
+const cors_1 = __importDefault(require("cors"));
+const express_2 = require("graphql-http/lib/use/express");
+const type_1 = require("graphql/type");
+const post_gql_1 = require("./modules/post/graphql/post.gql");
+const user_gql_1 = require("./modules/user/graphql/user.gql");
 const pipelinePromise = (0, node_util_1.promisify)(node_stream_1.pipeline);
 const bootstrap = async () => {
     const port = 3000;
@@ -28,7 +33,35 @@ const bootstrap = async () => {
         await pipelinePromise(fileExist, res);
     });
     //middlewares
+    let query = new type_1.GraphQLObjectType({
+        name: "RootQuery",
+        fields: {
+            ...user_gql_1.userQuery,
+            ...post_gql_1.postQuery
+            // category: {
+            //     type, resolve
+            // },
+            // review: {
+            //     type, resolve
+            // }
+        }
+    });
+    let mutation = new type_1.GraphQLObjectType({
+        name: "RootMutation",
+        fields: {
+            ...user_gql_1.userMutation,
+            ...post_gql_1.postMutation
+        }
+    });
+    let schema = new type_1.GraphQLSchema({
+        query,
+        mutation,
+        //  subscription
+    });
+    app.all('/graphql', (0, express_2.createHandler)({ schema }));
     app.use(express_1.default.json());
+    app.use((0, cors_1.default)({ origin: "*" }));
+    //routes
     app.use("/auth", modules_1.authRouter);
     app.use("/post", modules_1.postRouter);
     app.use("/comment", modules_1.commentRouter);
