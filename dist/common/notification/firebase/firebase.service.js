@@ -13,5 +13,8 @@ class FirebasePushNotificationProvider {
     async send(token, data) {
         await this.client.messaging().send({ token, data });
     }
+    async sendAll(tokens, data) {
+        await Promise.all(tokens.map(token => this.send(token, data)));
+    }
 }
 exports.FirebasePushNotificationProvider = FirebasePushNotificationProvider;

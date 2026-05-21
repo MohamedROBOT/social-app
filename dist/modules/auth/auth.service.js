@@ -9,15 +9,18 @@ const init_1 = __importDefault(require("../../common/mail/nodemailer/init"));
 const email_utils_1 = require("../../common/utils/email.utils");
 const user_repository_1 = __importDefault(require("../../DB/models/user/user.repository"));
 const redis_service_1 = require("../../DB/redis.service");
+const init_2 = __importDefault(require("../../common/cache/redis/init"));
 // single tone design pattern >> singleton from nestjs (class AuthService{})
 class AuthService {
     userRepository;
     mailProvider;
-    constructor(userRepository, mailProvider) {
+    cacheProvider;
+    constructor(userRepository, mailProvider, cacheProvider) {
         this.userRepository = userRepository;
         this.mailProvider = mailProvider;
+        this.cacheProvider = cacheProvider;
     }
-    //camelCase : PascalCase
+    // camelCase: PascalCase
     async signup(signupDTO) {
         const { email } = signupDTO;
         //check user existence
@@ -54,15 +57,29 @@ class AuthService {
             throw new common_1.BadRequestException("invalid credentials");
         if (!isMatched)
             throw new common_1.BadRequestException("invalid credentials");
+        // if (!userExist) return; //we won't return anything to increase security
+        if (loginDTO.FCM) {
+            //assign fcm to user for notifications into cache
+            //cache >> add to set => unique
+            await this.cacheProvider.addToSet(`${userExist._id.toString()}:FCM`, loginDTO.FCM);
+        }
         //check account verification
         //generate tokens
-        const tokens = (0, common_1.generateTokens)({
-            sub: userExist._id,
+        return (0, common_1.generateTokens)({
+            sub: userExist._id.toString(),
             email: userExist.email,
             role: userExist.role,
         });
         //set refresh token into redis
-        return tokens;
+    }
+    /**
+    * @param  userId  from token
+    * @param fcm  from FE
+     * */
+    async logout(userId, fcm) {
+        //remove fcm from user cache
+        await this.cacheProvider.rmSet(`${userId}:FCM`, fcm);
+        //bl token and
     }
     async sendOTP(sendOtpDTO) {
         //check email existence in db
@@ -123,4 +140,4 @@ class AuthService {
         await (0, redis_service_1.deleteFromCache)(email);
     }
 }
-exports.default = new AuthService(user_repository_1.default, init_1.default);
+exports.default = new AuthService(user_repository_1.default, init_1.default, init_2.default);

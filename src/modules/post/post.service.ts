@@ -3,11 +3,16 @@ import { PostRepository } from "../../DB/models/post/post.repository";
 import { AddReactionDTO, CreatePostDTO } from "./post.dto";
 import { NotFoundException, ON_MODEL } from "../../common";
 import { UserReactionRepository } from "../../DB/models/user-reaction/user-reaction.repository";
-
+import {INotificationProvider} from "../../common/notification/notification.interface";
+import firebasePushNotificationProvider from "../../common/notification/firebase/init"
+import {ICacheProvider} from "../../common/cache/cache.interface";
+import redisCacheProvider from "../../common/cache/redis/init";
 export class PostServices {
   constructor(
     private readonly postRepository: PostRepository,
     private readonly userReactionRepository: UserReactionRepository,
+  private readonly notificationProvider:INotificationProvider,
+    private readonly cacheProvider:ICacheProvider
   ) {}
 
   async create(createPostDTO: CreatePostDTO, userId: Types.ObjectId) {
@@ -78,4 +83,7 @@ export class PostServices {
 export default new PostServices(
   new PostRepository(),
   new UserReactionRepository(),
+  firebasePushNotificationProvider,
+    redisCacheProvider
+
 );

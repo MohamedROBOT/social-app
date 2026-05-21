@@ -33,6 +33,7 @@ const bootstrap = async () => {
     app.use("/post", modules_1.postRouter);
     app.use("/comment", modules_1.commentRouter);
     app.use("/request", modules_1.requestRouter);
+    app.use("/user", modules_1.userRouter);
     //note: error handle must be the last middleware in the stack because it will catch any error thrown from previous middlewares or routes
     //global error handler middleware
     app.use((error, req, res, next) => {

@@ -19,5 +19,15 @@ class RedisCacheProvider {
             await this.client.set(key, value, { EX: ttlSeconds });
         await this.client.set(key, value);
     }
+    async addToSet(key, value) {
+        await this.client.sAdd(key, value);
+    }
+    async rmSet(key, value) {
+        const number = await this.client.sRem(key, value);
+        return !!number;
+    }
+    async getAllFromSet(key) {
+        return await this.client.sMembers(key);
+    }
 }
 exports.RedisCacheProvider = RedisCacheProvider;

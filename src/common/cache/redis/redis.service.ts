@@ -10,6 +10,9 @@ export class RedisCacheProvider implements ICacheProvider {
         this.client = createClient(config)
         this.client.connect().catch(err=>console.log(err))
     }
+
+
+
     async del(key: string): Promise<void> {
         await this.client.del(key)
     }
@@ -21,6 +24,18 @@ export class RedisCacheProvider implements ICacheProvider {
     async set(key: string, value: any, ttlSeconds: number): Promise<void> {
     if(ttlSeconds)  await this.client.set(key,value,{EX: ttlSeconds})
      await this.client.set(key,value)
+    }
+    async addToSet(key: string, value: string): Promise<void> {
+      await  this.client.sAdd(key, value)
+    }
+
+    async rmSet(key: string, value: string): Promise<boolean> {
+     const number =  await this.client.sRem(key, value)
+        return !!number
+    }
+
+    async getAllFromSet(key: string): Promise<string[]> {
+       return await this.client.sMembers(key)
     }
 
 }

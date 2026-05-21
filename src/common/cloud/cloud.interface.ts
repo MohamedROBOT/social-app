@@ -6,7 +6,7 @@ export interface ICloudProvider {
   //aws => s3 return Key (pascal case) which represents the path in cloud
 
   //basic cloud provider
-  uploadFile(file: Express.Multer.File, path: string): Promise<string>; //key
+  uploadFile(file: Express.Multer.File, path: string): Promise<{url:string, key:string}>; //key
   deleteFile(key: string): Promise<boolean | undefined>;
   getFile(key: string): Promise<NodeJS.ReadableStream | undefined>;
 

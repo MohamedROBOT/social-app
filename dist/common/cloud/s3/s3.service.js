@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.S3CloudProvider = void 0;
 const client_s3_1 = require("@aws-sdk/client-s3");
+const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
 class S3CloudProvider {
     client;
     constructor(config) {
@@ -36,12 +37,18 @@ class S3CloudProvider {
             Bucket: "bucket_name",
             //key of the file must be unique
             Key: `social-app/${path}/${Date.now()}_${file.originalname}`,
-            ACL: "public-read",
+            // ACL: "public-read",
             ContentType: file.mimetype,
             Body: file.buffer
         });
         await this.client.send(command);
-        return command.input.Key;
+        //pre-signer
+        const url = await (0, s3_request_presigner_1.getSignedUrl)(this.client, command, { expiresIn: 1800 });
+        return {
+            url,
+            key: command.input.Key
+        };
+        // return command.input.Key as string
     }
 }
 exports.S3CloudProvider = S3CloudProvider;

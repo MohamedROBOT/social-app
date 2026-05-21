@@ -1,15 +1,24 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostServices = void 0;
 const post_repository_1 = require("../../DB/models/post/post.repository");
 const common_1 = require("../../common");
 const user_reaction_repository_1 = require("../../DB/models/user-reaction/user-reaction.repository");
+const init_1 = __importDefault(require("../../common/notification/firebase/init"));
+const init_2 = __importDefault(require("../../common/cache/redis/init"));
 class PostServices {
     postRepository;
     userReactionRepository;
-    constructor(postRepository, userReactionRepository) {
+    notificationProvider;
+    cacheProvider;
+    constructor(postRepository, userReactionRepository, notificationProvider, cacheProvider) {
         this.postRepository = postRepository;
         this.userReactionRepository = userReactionRepository;
+        this.notificationProvider = notificationProvider;
+        this.cacheProvider = cacheProvider;
     }
     async create(createPostDTO, userId) {
         return await this.postRepository.create({ ...createPostDTO, userId });
@@ -64,4 +73,4 @@ class PostServices {
     }
 }
 exports.PostServices = PostServices;
-exports.default = new PostServices(new post_repository_1.PostRepository(), new user_reaction_repository_1.UserReactionRepository());
+exports.default = new PostServices(new post_repository_1.PostRepository(), new user_reaction_repository_1.UserReactionRepository(), init_1.default, init_2.default);

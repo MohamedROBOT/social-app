@@ -25,6 +25,7 @@ export interface SendOtpDTO {
 export interface SigninDTO {
   email: string;
   password: string;
+  FCM?: string;
 }
 
 

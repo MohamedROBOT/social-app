@@ -1,14 +1,14 @@
-import  { JwtPayload, PrivateKey, sign, SignOptions, verify } from "jsonwebtoken";
+import  { JwtPayload,  sign, SignOptions, verify } from "jsonwebtoken";
 import crypto from "node:crypto";
 import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from "../../config";
-import { IJwt } from "../interfaces";
 
-const signToken = (payload: IJwt, secret: string, options?: SignOptions) => {
+
+const signToken = (payload: JwtPayload, secret: string, options?: SignOptions) => {
    payload.jti = crypto.randomUUID();
   return sign(payload, secret, options);
 }
 
-export const generateTokens = (payload: IJwt)=>{
+export const generateTokens = (payload: JwtPayload)=>{
     const accessToken = signToken(payload, JWT_ACCESS_SECRET, {
         expiresIn: "1h"
     })

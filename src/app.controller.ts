@@ -2,7 +2,7 @@ import type {Request, Response, NextFunction} from "express";
 import express from 'express';
 import {BadRequestException, NotFoundException} from "./common";
 import {connectDB} from "./DB/connection";
-import {authRouter, commentRouter, postRouter, requestRouter} from "./modules";
+import {authRouter, commentRouter, postRouter, requestRouter, userRouter} from "./modules";
 import {connectRedis} from "./DB/redis.connection";
 import s3CloudProvider from "./common/cloud/s3/init";
 import {pipeline} from "node:stream";
@@ -32,6 +32,7 @@ const bootstrap = async () => {
     app.use("/post", postRouter);
     app.use("/comment", commentRouter)
     app.use("/request", requestRouter)
+    app.use("/user", userRouter)
     //note: error handle must be the last middleware in the stack because it will catch any error thrown from previous middlewares or routes
     //global error handler middleware
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {

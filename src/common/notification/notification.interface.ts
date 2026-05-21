@@ -4,5 +4,5 @@ export interface INotificationProvider {
   * @params data: object contains push notification message (data)
   */
  send(token: string, data:{title: string, body:string}): Promise<void>;
-
+ sendAll(tokens: string[], data:{title: string; body:string;}): Promise<void>;
 }
