@@ -14,7 +14,9 @@ export class PostServices {
   private readonly notificationProvider:INotificationProvider,
     private readonly cacheProvider:ICacheProvider
   ) {}
-
+async getPost(postId: Types.ObjectId){
+   return await this.postRepository.getOne({_id: postId},{},{populate:[{path:"userId"}]})
+}
   async create(createPostDTO: CreatePostDTO, userId: Types.ObjectId) {
     return await this.postRepository.create({ ...createPostDTO, userId });
   }
@@ -58,7 +60,7 @@ export class PostServices {
         _id: userReaction._id,
       });
 
-      this.postRepository.updateOne(
+     await this.postRepository.updateOne(
         {
           _id: addReactionDTO.postId,
         },

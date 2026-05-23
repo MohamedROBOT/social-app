@@ -34,10 +34,7 @@ export abstract class AbstractRepository<T> {
 
   public async updateOne(filter:QueryFilter<T>, update: UpdateQuery<T>, options?:QueryOptions<T>) {
     
-    return this._model.findOneAndUpdate(filter,update, {
-        returnDocument: "after",
-        ...options
-    })
+    return this._model.findOneAndUpdate(filter,update, options)
   }
 
 public async deleteOne (filter: QueryFilter<T>){

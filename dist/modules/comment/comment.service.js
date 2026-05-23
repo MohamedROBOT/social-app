@@ -46,6 +46,10 @@ class CommentService {
             throw new common_1.NotFoundException("comments not found");
         return comments;
     }
+    async getOne(commentId) {
+        //nested populate 
+        return await this.commentRepository.getOne({ _id: commentId }, {}, { populate: [{ path: "userId" }, { path: "postId", populate: { path: "userId" } }] });
+    }
     async delete(id, userId) {
         //check existence
         const commentExist = await this.commentRepository.getOne({ _id: id }, {}, { populate: [{ path: "postId" }] }); //{} | null

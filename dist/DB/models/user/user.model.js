@@ -42,6 +42,7 @@ const schema = new mongoose_1.Schema({
         enum: common_1.SYS_GENDER,
         default: common_1.SYS_GENDER.male
     },
+    profilePic: { type: String }
 }, { timestamps: true });
 // schema.pre("save", function(){
 //   //logic before hashing the password

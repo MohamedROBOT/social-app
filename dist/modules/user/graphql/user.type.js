@@ -4,7 +4,7 @@ exports.UserType = exports.IUser = void 0;
 const type_1 = require("graphql/type");
 exports.IUser = {
     _id: { type: type_1.GraphQLID },
-    name: { type: type_1.GraphQLString },
+    userName: { type: type_1.GraphQLString },
     email: { type: type_1.GraphQLString },
     password: { type: type_1.GraphQLString },
     phoneNumber: {

@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.S3CloudProvider = void 0;
 const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
+const lib_storage_1 = require("@aws-sdk/lib-storage");
+const config_1 = require("../../../config");
 class S3CloudProvider {
     client;
     constructor(config) {
@@ -31,24 +33,51 @@ class S3CloudProvider {
         return Body;
     }
     //we handle files with busboy for parsing files & Multer for upload file into storage{diskStorage, memoryStorage}
-    async uploadFile(file, path) {
+    async uploadFileV1(file, path) {
+        //PutObjectCommand support to upload files up to 5 GB
         let command = new client_s3_1.PutObjectCommand({
             //add S3 credentials here import from .env
             Bucket: "bucket_name",
             //key of the file must be unique
             Key: `social-app/${path}/${Date.now()}_${file.originalname}`,
-            // ACL: "public-read",
+            ACL: "private",
             ContentType: file.mimetype,
-            Body: file.buffer
+            // Body: file.buffer
         });
         await this.client.send(command);
-        //pre-signer
-        const url = await (0, s3_request_presigner_1.getSignedUrl)(this.client, command, { expiresIn: 1800 });
-        return {
-            url,
-            key: command.input.Key
-        };
-        // return command.input.Key as string
+        return command.input.Key;
+    }
+    async uploadFileV2(file, path) {
+        let command = new client_s3_1.PutObjectCommand({
+            //add S3 credentials here import from .env
+            Bucket: "bucket_name",
+            //key of the file must be unique
+            Key: `social-app/${path}/${Date.now()}_${file.originalname}`,
+            ACL: "private",
+            ContentType: file.mimetype,
+            // Body: file.buffer
+        });
+        return await (0, s3_request_presigner_1.getSignedUrl)(this.client, command, { expiresIn: 5 * 60 });
+    }
+    async uploadFile(file, path) {
+        //lib storage support large files as chunks and can track progress
+        const upload = new lib_storage_1.Upload({
+            client: this.client,
+            params: {
+                Bucket: config_1.BUCKET_NAME,
+                Key: `social-app/${path}/${Date.now()}_${file.originalname}`,
+                ACL: "private",
+                ContentType: file.mimetype,
+                Body: file.buffer
+            }
+        });
+        //to track progress
+        upload.on('httpUploadProgress', (progress) => {
+            console.log(progress.loaded, progress.total);
+            //useful with realtime (socket)
+        });
+        const { Key } = await upload.done();
+        return Key;
     }
 }
 exports.S3CloudProvider = S3CloudProvider;

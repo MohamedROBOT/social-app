@@ -6,7 +6,7 @@ export interface ICloudProvider {
   //aws => s3 return Key (pascal case) which represents the path in cloud
 
   //basic cloud provider
-  uploadFile(file: Express.Multer.File, path: string): Promise<{url:string, key:string}>; //key
+  uploadFile(file: Express.Multer.File, path: string): Promise<string>; //key
   deleteFile(key: string): Promise<boolean | undefined>;
   getFile(key: string): Promise<NodeJS.ReadableStream | undefined>;
 
@@ -15,5 +15,6 @@ export interface ICloudProvider {
 
   //TODO: implement other cloud providers 1- cloudinary 2- Digital Ocean 3- azure
   //TODO: implement integration service
+  // search SQS in amazon
 }
 

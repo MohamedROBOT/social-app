@@ -20,6 +20,9 @@ class PostServices {
         this.notificationProvider = notificationProvider;
         this.cacheProvider = cacheProvider;
     }
+    async getPost(postId) {
+        return await this.postRepository.getOne({ _id: postId }, {}, { populate: [{ path: "userId" }] });
+    }
     async create(createPostDTO, userId) {
         return await this.postRepository.create({ ...createPostDTO, userId });
     }
@@ -56,7 +59,7 @@ class PostServices {
             await this.userReactionRepository.deleteOne({
                 _id: userReaction._id,
             });
-            this.postRepository.updateOne({
+            await this.postRepository.updateOne({
                 _id: addReactionDTO.postId,
             }, {
                 $inc: { reactionCount: -1 },

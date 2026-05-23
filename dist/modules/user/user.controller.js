@@ -12,11 +12,10 @@ const router = (0, express_1.Router)();
 router.post("/profile-pic", 
 //auth
 (0, common_1.multerUploadFile)().single("profile-pic"), async (req, res, next) => {
-    const data = await user_service_1.default.uploadProfilePic(req.file, new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"));
+    await user_service_1.default.uploadProfilePic(req.file, new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"));
     return res.status(200).json({
         success: true,
         message: "Profile picture uploaded successfully",
-        data
     });
 });
 exports.default = router;

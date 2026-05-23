@@ -1,6 +1,8 @@
 import {DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {ICloudProvider} from "../cloud.interface";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
+import {Upload} from '@aws-sdk/lib-storage'
+import {BUCKET_NAME} from "../../../config";
 
 interface S3Config {
     region: string;
@@ -8,6 +10,7 @@ interface S3Config {
         accessKeyId: string;
         secretAccessKey: string;
     };
+
 }
 
 export class S3CloudProvider implements ICloudProvider {
@@ -20,6 +23,7 @@ export class S3CloudProvider implements ICloudProvider {
                 accessKeyId: config.credentials.accessKeyId,
                 secretAccessKey: config.credentials.secretAccessKey,
             },
+
         });
     }
 
@@ -46,24 +50,55 @@ export class S3CloudProvider implements ICloudProvider {
     }
 
 //we handle files with busboy for parsing files & Multer for upload file into storage{diskStorage, memoryStorage}
-    async uploadFile(file: Express.Multer.File, path: string): Promise<{url:string, key:string}> {
+    async uploadFileV1(file: Express.Multer.File, path: string): Promise<string> {
+        //PutObjectCommand support to upload files up to 5 GB
         let command = new PutObjectCommand({
             //add S3 credentials here import from .env
             Bucket: "bucket_name",
             //key of the file must be unique
             Key: `social-app/${path}/${Date.now()}_${file.originalname}`,
-            // ACL: "public-read",
+            ACL: "private",
             ContentType: file.mimetype,
-            Body: file.buffer
+            // Body: file.buffer
 
         });
         await this.client.send(command)
-        //pre-signer
-       const url =   await getSignedUrl(this.client, command, {expiresIn:1800});
-    return {
-        url,
-        key: command.input.Key as string
+
+        return command.input.Key as string
     }
-        // return command.input.Key as string
+    async uploadFileV2(file: Express.Multer.File, path: string): Promise<string> {
+
+        let command = new PutObjectCommand({
+            //add S3 credentials here import from .env
+            Bucket: "bucket_name",
+            //key of the file must be unique
+            Key: `social-app/${path}/${Date.now()}_${file.originalname}`,
+            ACL: "private",
+            ContentType: file.mimetype,
+            // Body: file.buffer
+
+        });
+       return await getSignedUrl(this.client, command, {expiresIn: 5*60})
+
+    }
+    async uploadFile(file: Express.Multer.File, path: string): Promise<string> {
+       //lib storage support large files as chunks and can track progress
+        const upload = new Upload({
+           client: this.client,
+           params: {
+               Bucket: BUCKET_NAME,
+               Key: `social-app/${path}/${Date.now()}_${file.originalname}`,
+               ACL: "private",
+               ContentType: file.mimetype,
+               Body: file.buffer
+           }
+       })
+        //to track progress
+        upload.on('httpUploadProgress', (progress) => {
+            console.log(progress.loaded, progress.total)
+            //useful with realtime (socket)
+        })
+       const {Key} = await upload.done();
+        return Key as string
     }
 }

@@ -8,17 +8,17 @@ import s3CloudProvider from "./common/cloud/s3/init";
 import {pipeline} from "node:stream";
 import {promisify} from "node:util";
 import cors from 'cors'
+import {PORT} from "./config";
 import {createHandler} from "graphql-http/lib/use/express";
-import {GraphQLFloat, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLSchema, GraphQLString} from "graphql/type";
-import {UserType} from "./modules/user/graphql/user.type";
-import {PostType} from "./modules/post/graphql/post.type";
-import {postMutation, postQuery} from "./modules/post/graphql/post.gql";
-import {userMutation, userQuery} from "./modules/user/graphql/user.gql";
+import {GraphQLObjectType, GraphQLSchema} from "graphql/type";
+import {userGQLQuery} from "./modules/user/graphql/user.gql.query";
+import {postGQLQuery} from "./modules/post/graphql/post.gql.query";
+import {commentGQLQuery} from "./modules/comment/graphql/comment.query.gql";
 
 const pipelinePromise = promisify(pipeline)
 
 const bootstrap = async () => {
-    const port = 3000;
+    const port = PORT;
     const app = express();
     await connectDB();
     await connectRedis();
@@ -29,39 +29,41 @@ const bootstrap = async () => {
         const fileExist = await s3CloudProvider.getFile(key)
         if (!fileExist) throw new NotFoundException("File not found")
         //file is readStream and res is writeStream so we use pipeline
-        await pipelinePromise(fileExist, res)
-
-
+        await pipelinePromise(fileExist, res);
     })
     //middlewares
-    let query = new GraphQLObjectType({
-        name: "RootQuery",
-        fields: {
-          ...userQuery,
-            ...postQuery
-            // category: {
-            //     type, resolve
-            // },
-            // review: {
-            //     type, resolve
-            // }
-        }
-    })
-    let mutation = new GraphQLObjectType({
-        name: "RootMutation",
-        fields: {
-            ...userMutation,
-            ...postMutation
-        }
-    })
-    let schema = new GraphQLSchema({
-        query,
-         mutation,
-        //  subscription
-    })
-    app.all('/graphql', createHandler({schema}))
     app.use(express.json());
     app.use(cors({origin: "*"}))
+    //graphql route
+    const query = new GraphQLObjectType({
+        name: "RootQuery",
+        fields: {
+            //auth
+            ...userGQLQuery,
+            ...postGQLQuery,
+
+            ...commentGQLQuery
+            //request
+        }
+        // description
+    })
+    const mutation = new GraphQLObjectType({
+        name: "RootMutation",
+        fields: {
+            //auth
+            //user
+            //post
+            //comment
+            //request
+        }
+        // description
+    })
+    const schema = new GraphQLSchema({
+        query,
+        // mutation
+        // subscription
+    })
+    app.all("/graphql", createHandler({schema}))
     //routes
     app.use("/auth", authRouter);
     app.use("/post", postRouter);
@@ -75,7 +77,7 @@ const bootstrap = async () => {
         return res.status((error.cause as number) || 500).json({
             success: false,
             message: error.message,
-            stack: error.stack,
+            // stack: error.stack,
             //we do this because global Error doesn't have details attribute
             details: error instanceof BadRequestException && error.details,
         });

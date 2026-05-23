@@ -57,7 +57,10 @@ class CommentService {
       throw new NotFoundException("comments not found");
     return comments;
   }
-
+async getOne (commentId: Types.ObjectId){
+    //nested populate 
+    return await this.commentRepository.getOne({_id: commentId},{},{populate:[{path:"userId"},{path:"postId", populate:{path:"userId"}}]})
+}
   async delete(id: Types.ObjectId, userId: Types.ObjectId) {
     //check existence
     const commentExist = await this.commentRepository.getOne(

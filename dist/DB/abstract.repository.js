@@ -26,10 +26,7 @@ class AbstractRepository {
         return this._model.find(filter, projection, options);
     }
     async updateOne(filter, update, options) {
-        return this._model.findOneAndUpdate(filter, update, {
-            returnDocument: "after",
-            ...options
-        });
+        return this._model.findOneAndUpdate(filter, update, options);
     }
     async deleteOne(filter) {
         return this._model.deleteOne(filter);

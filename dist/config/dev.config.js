@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DB_REDIS = exports.MAIL_PASSWORD = exports.MAIL_EMAIL = exports.ENCRYPTION_SECRET = exports.JWT_REFRESH_SECRET = exports.JWT_ACCESS_SECRET = exports.DB_URL = void 0;
+exports.BUCKET_SECRET_ACCESS_KEY = exports.BUCKET_ACCESS_KEY_ID = exports.BUCKET_REGION = exports.BUCKET_NAME = exports.DB_REDIS = exports.MAIL_PASSWORD = exports.MAIL_EMAIL = exports.ENCRYPTION_SECRET = exports.JWT_REFRESH_SECRET = exports.JWT_ACCESS_SECRET = exports.DB_URL = exports.PORT = void 0;
+exports.PORT = process.env.PORT;
 exports.DB_URL = process.env.DB_URL;
 exports.JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 exports.JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
@@ -8,3 +9,7 @@ exports.ENCRYPTION_SECRET = process.env.ENCRYPTION_SECRET;
 exports.MAIL_EMAIL = process.env.GOOGLE_EMAIL;
 exports.MAIL_PASSWORD = process.env.GOOGLE_PASSWORD;
 exports.DB_REDIS = process.env.DB_REDIS;
+exports.BUCKET_NAME = process.env.S3_BUCKET_NAME;
+exports.BUCKET_REGION = process.env.S3_REGION;
+exports.BUCKET_ACCESS_KEY_ID = process.env.S3_ACCESS_KEY_ID;
+exports.BUCKET_SECRET_ACCESS_KEY = process.env.S3_SECRET_ACCESS_KEY;
