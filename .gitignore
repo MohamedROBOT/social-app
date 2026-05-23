@@ -1,2 +1,3 @@
 *.env
 *.md
+/src/config/test-firebase-4052a-firebase-adminsdk-fbsvc-4e18f55b04.json

@@ -58,7 +58,7 @@ class CommentService {
     return comments;
   }
 async getOne (commentId: Types.ObjectId){
-    //nested populate 
+    //nested populate
     return await this.commentRepository.getOne({_id: commentId},{},{populate:[{path:"userId"},{path:"postId", populate:{path:"userId"}}]})
 }
   async delete(id: Types.ObjectId, userId: Types.ObjectId) {
