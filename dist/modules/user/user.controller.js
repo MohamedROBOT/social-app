@@ -7,6 +7,7 @@ const express_1 = require("express");
 const common_1 = require("../../common");
 const user_service_1 = __importDefault(require("./user.service"));
 const mongoose_1 = require("mongoose");
+const middleware_1 = require("../../middleware");
 const router = (0, express_1.Router)();
 //upload profile picture
 router.post("/profile-pic", 
@@ -16,6 +17,14 @@ router.post("/profile-pic",
     return res.status(200).json({
         success: true,
         message: "Profile picture uploaded successfully",
+    });
+});
+router.get("/", middleware_1.isAuthenticated, async (req, res, next) => {
+    const user = await user_service_1.default.profile(new mongoose_1.Types.ObjectId(req.user.sub));
+    return res.status(200).json({
+        success: true,
+        message: "user profile fetched successfully",
+        data: user,
     });
 });
 exports.default = router;

@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response, Router } from "express";
 import postService from "./post.service";
 import { Types } from "mongoose";
-import { createPostSchema } from "./post.dto";
+
 import { isValid } from "../../middleware";
 import { default as commentRouter } from "../comment/comment.controller";
+import { createPostSchema } from "./post.validation";
 const router = Router(); //sub application
 
 //redirect to another sub application (comment)

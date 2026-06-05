@@ -7,15 +7,16 @@ const router = Router();
 router.post(
   "/signin",
   async (req: Request, res: Response, next: NextFunction) => {
-    const tokens = await authService.login(req.body);
+    const tokens = await authService.signin(req.body);
 
     res.status(200).json({
       success: true,
-      message: "Login successful",
+      message: "Signin successful",
       ...tokens,
     });
   },
 );
+
 router.post(
   "/signup",
   isValid(signupSchema),

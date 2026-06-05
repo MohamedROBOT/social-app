@@ -6,15 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const post_service_1 = __importDefault(require("./post.service"));
 const mongoose_1 = require("mongoose");
-const post_dto_1 = require("./post.dto");
 const middleware_1 = require("../../middleware");
 const comment_controller_1 = __importDefault(require("../comment/comment.controller"));
+const post_validation_1 = require("./post.validation");
 const router = (0, express_1.Router)(); //sub application
 //redirect to another sub application (comment)
 router.use("/:postId/comment", comment_controller_1.default);
 router.post("/", 
 //add authentication middleware here
-(0, middleware_1.isValid)(post_dto_1.createPostSchema), async (req, res, next) => {
+(0, middleware_1.isValid)(post_validation_1.createPostSchema), async (req, res, next) => {
     //dummy data for testing then add middlewares
     const createdPost = await post_service_1.default.create(req.body, new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"));
     return res.status(201).json({

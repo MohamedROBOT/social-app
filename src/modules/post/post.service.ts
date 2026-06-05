@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { PostRepository } from "../../DB/models/post/post.repository";
+import postRepository, { PostRepository } from "../../DB/models/post/post.repository";
 import { AddReactionDTO, CreatePostDTO } from "./post.dto";
 import { NotFoundException, ON_MODEL } from "../../common";
 import { UserReactionRepository } from "../../DB/models/user-reaction/user-reaction.repository";
@@ -14,11 +14,21 @@ export class PostServices {
   private readonly notificationProvider:INotificationProvider,
     private readonly cacheProvider:ICacheProvider
   ) {}
-async getPost(postId: Types.ObjectId){
+async get(postId: Types.ObjectId){
    return await this.postRepository.getOne({_id: postId},{},{populate:[{path:"userId"}]})
 }
   async create(createPostDTO: CreatePostDTO, userId: Types.ObjectId) {
     return await this.postRepository.create({ ...createPostDTO, userId });
+  }
+
+  async update(updatePostDTO: CreatePostDTO, postId: Types.ObjectId) {
+    //check post existence
+    //
+    return await this.postRepository.updateOne({_id: postId},updatePostDTO, {returnDocument: "after"})
+  }
+
+  async delete (postId:Types.ObjectId) {
+    return await this.postRepository.deleteOne({_id:postId})
   }
 
   async addReaction(addReactionDTO: AddReactionDTO, userId: Types.ObjectId) {
@@ -83,7 +93,7 @@ async getPost(postId: Types.ObjectId){
 }
 
 export default new PostServices(
-  new PostRepository(),
+  postRepository,
   new UserReactionRepository(),
   firebasePushNotificationProvider,
     redisCacheProvider

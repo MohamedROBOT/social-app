@@ -45,7 +45,7 @@ class AuthService {
         await (0, redis_service_1.setIntoCache)(`${email}:otp`, otp, 3 * 60); // 3 min
         await (0, redis_service_1.setIntoCache)(email, JSON.stringify(signupDTO), 3 * 24 * 60 * 60); // 3 days
     }
-    async login(loginDTO) {
+    async signin(loginDTO) {
         //check email existence in db
         const userExist = await this.userRepository.getOne({
             email: loginDTO.email,

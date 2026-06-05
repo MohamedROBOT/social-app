@@ -6,17 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const request_service_1 = __importDefault(require("./request.service"));
 const mongoose_1 = require("mongoose");
+const middleware_1 = require("../../middleware");
 const router = (0, express_1.Router)();
 router.post("/:receiverId", 
 //auth middleware
-async (req, res, next) => {
-    await request_service_1.default.sendRequest(new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"), new mongoose_1.Types.ObjectId(req.params.receiverId));
+middleware_1.isAuthenticated, async (req, res, next) => {
+    await request_service_1.default.sendRequest(new mongoose_1.Types.ObjectId(req.user.sub), new mongoose_1.Types.ObjectId(req.params.receiverId));
     return res.sendStatus(204);
 });
-router.post("/accept/:id", 
-//auth
-async (req, res, next) => {
-    await request_service_1.default.acceptRequest(new mongoose_1.Types.ObjectId("69f21a6b6bdb8ac790d5a78a"), new mongoose_1.Types.ObjectId(req.params.id));
+router.post("/accept/:id", middleware_1.isAuthenticated, async (req, res, next) => {
+    await request_service_1.default.acceptRequest(new mongoose_1.Types.ObjectId(req.user.sub), new mongoose_1.Types.ObjectId(req.params.id));
     return res.sendStatus(204);
 });
 router.delete("/decline/:id", 

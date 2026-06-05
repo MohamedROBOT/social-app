@@ -8,3 +8,5 @@ export class PostRepository extends AbstractRepository<IPost> {
     }
 }
 
+
+export default new PostRepository();

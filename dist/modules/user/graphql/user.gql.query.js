@@ -8,10 +8,10 @@ const user_gql_type_1 = require("./user.gql.type");
 const user_service_1 = __importDefault(require("../user.service"));
 const mongoose_1 = require("mongoose");
 exports.userGQLQuery = {
-    user: {
+    getUser: {
         type: user_gql_type_1.userGQLType,
         resolve: async () => {
-            return await user_service_1.default.profile(new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"));
+            return await user_service_1.default.profile(new mongoose_1.Types.ObjectId("6a1c7b9ad357f3b024064473"));
         }
     }
 };

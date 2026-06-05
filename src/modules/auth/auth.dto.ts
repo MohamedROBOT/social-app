@@ -11,24 +11,21 @@ import { signupSchema } from "./auth.validation";
 //   gender: SYS_GENDER;
 // }
 
-
 //make type dto out of zod schema
-export type SignupDTO = z.infer<typeof signupSchema>
+export type SignupDTO = z.infer<typeof signupSchema>;
 
 export interface VerifyAccountDTO {
   otp: string;
   email: string;
 }
 export interface SendOtpDTO {
-  email: string
+  email: string;
 }
 export interface SigninDTO {
   email: string;
   password: string;
   FCM?: string;
 }
-
-
 
 export interface ResetPasswordDTO {
   email: string;

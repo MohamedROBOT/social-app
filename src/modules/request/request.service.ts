@@ -8,8 +8,8 @@ import {
   NotFoundException,
   UnAuthorizedException,
 } from "../../common";
-import {
-  userFriendRepository,
+import userFriendRepository, {
+  
   UserFriendRepository,
 } from "../../DB/models/user-friend/user-friend.repository";
 
@@ -28,6 +28,8 @@ class RequestService {
     if (senderId.toString() === receiverId.toString())
       throw new BadRequestException("Not allowed to send request to yourself");
     //check block users
+    //check receiver existance
+    
     //check user friends or not
     const userFriendExist = await this.userFriendRepository.getOne({
       $or: [

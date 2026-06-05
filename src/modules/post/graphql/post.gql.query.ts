@@ -1,12 +1,14 @@
-import {postGQLType} from "./post.gql.type";
+import { PostGQLType } from "./post.type.gql";
 import postService from "../post.service";
-import {Types} from "mongoose";
+import { Types } from "mongoose";
+import { GraphQLID } from "graphql";
 
 export const postGQLQuery = {
-    post: {
-        type:postGQLType,
-        resolve:async ()=>{
-         return  await postService.getPost(new Types.ObjectId("69e4abe10f47a1294fb86758"))
-        }
-    }
-}
+  post: {
+    type: PostGQLType,
+    args: { id: { type: GraphQLID } },
+    resolve: async (parent: any, args: { id: any }) => {
+      return await postService.get(args.id);
+    },
+  },
+};

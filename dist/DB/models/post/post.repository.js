@@ -9,3 +9,4 @@ class PostRepository extends abstract_repository_1.AbstractRepository {
     }
 }
 exports.PostRepository = PostRepository;
+exports.default = new PostRepository();

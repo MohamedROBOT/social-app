@@ -1,9 +1,10 @@
-import {GraphQLInt, GraphQLList, GraphQLObjectType, GraphQLString} from "graphql/type";
+import {GraphQLID, GraphQLInt, GraphQLList, GraphQLObjectType, GraphQLString} from "graphql/type";
 import {userGQLType} from "../../user/graphql/user.gql.type";
 
-export const postGQLType = new GraphQLObjectType({
+export const PostGQLType = new GraphQLObjectType({
     name: "PostType",
     fields: {
+        _id: {type: GraphQLID},
         content: {type: GraphQLString},
         attachments: {type: new GraphQLList(GraphQLString)},
         reactionCount: {type: GraphQLInt},

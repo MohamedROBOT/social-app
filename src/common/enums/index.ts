@@ -36,3 +36,8 @@ brother ='brother',
 father = 'father',
 mother = 'mother',
 }
+
+export enum SYS_CHAT_TYPE {
+  private,
+  group
+}

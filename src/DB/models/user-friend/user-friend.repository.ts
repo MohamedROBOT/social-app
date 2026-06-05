@@ -9,4 +9,4 @@ export class UserFriendRepository extends AbstractRepository<IUserFriend> {
 }
 
 
-export const userFriendRepository = new UserFriendRepository();
+export default new UserFriendRepository();

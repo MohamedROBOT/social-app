@@ -1,41 +1,38 @@
-import {ICacheProvider} from "../cache.interface";
-import {Promise} from "mongoose";
-import {createClient, RedisClientType} from "redis";
-interface RedisConfig{
-    url: string;
+import { ICacheProvider } from "../cache.interface";
+import { Promise } from "mongoose";
+import { createClient, RedisClientType } from "redis";
+interface RedisConfig {
+  url: string;
 }
 export class RedisCacheProvider implements ICacheProvider {
-    private client: RedisClientType
-    constructor(config:RedisConfig){
-        this.client = createClient(config)
-        this.client.connect().catch(err=>console.log(err))
-    }
+  private client: RedisClientType;
+  constructor(config: RedisConfig) {
+    this.client = createClient(config);
+    this.client.connect().catch((err) => console.log(err));
+  }
 
+  async del(key: string): Promise<void> {
+    await this.client.del(key);
+  }
 
+  async get(key: string): Promise<string | null> {
+    return await this.client.get(key);
+  }
 
-    async del(key: string): Promise<void> {
-        await this.client.del(key)
-    }
+  async set(key: string, value: any, ttlSeconds: number): Promise<void> {
+    if (ttlSeconds) await this.client.set(key, value, { EX: ttlSeconds });
+    await this.client.set(key, value);
+  }
+  async addToSet(key: string, value: string): Promise<void> {
+    await this.client.sAdd(key, value);
+  }
 
-     async get(key: string): Promise<string | null> {
-        return await this.client.get(key)
-    }
+  async rmSet(key: string, value: string): Promise<boolean> {
+    const number = await this.client.sRem(key, value);
+    return !!number;
+  }
 
-    async set(key: string, value: any, ttlSeconds: number): Promise<void> {
-    if(ttlSeconds)  await this.client.set(key,value,{EX: ttlSeconds})
-     await this.client.set(key,value)
-    }
-    async addToSet(key: string, value: string): Promise<void> {
-      await  this.client.sAdd(key, value)
-    }
-
-    async rmSet(key: string, value: string): Promise<boolean> {
-     const number =  await this.client.sRem(key, value)
-        return !!number
-    }
-
-    async getAllFromSet(key: string): Promise<string[]> {
-       return await this.client.sMembers(key)
-    }
-
+  async getAllFromSet(key: string): Promise<string[]> {
+    return await this.client.sMembers(key);
+  }
 }

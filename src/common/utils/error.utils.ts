@@ -1,3 +1,5 @@
+import { GraphQLError } from "graphql";
+
 export class NotFoundException extends Error {
   constructor(message: string) {
     super(message, { cause: 404 });
@@ -21,8 +23,10 @@ interface IErrorDetails {
 export class BadRequestException extends Error {
   constructor(
     message: string,
-    public details?:IErrorDetails[] ,
+    public details?:IErrorDetails[],
   ) {
     super(message, { cause: 400 });
   }
 }
+
+

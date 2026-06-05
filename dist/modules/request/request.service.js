@@ -1,8 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const request_repository_1 = require("../../DB/models/request/request.repository");
 const common_1 = require("../../common");
-const user_friend_repository_1 = require("../../DB/models/user-friend/user-friend.repository");
+const user_friend_repository_1 = __importDefault(require("../../DB/models/user-friend/user-friend.repository"));
 class RequestService {
     requestRepository;
     userFriendRepository;
@@ -19,6 +22,7 @@ class RequestService {
         if (senderId.toString() === receiverId.toString())
             throw new common_1.BadRequestException("Not allowed to send request to yourself");
         //check block users
+        //check receiver existance
         //check user friends or not
         const userFriendExist = await this.userFriendRepository.getOne({
             $or: [
@@ -135,4 +139,4 @@ class RequestService {
     }
 }
 //we will apply dependency injection
-exports.default = new RequestService(request_repository_1.requestRepository, user_friend_repository_1.userFriendRepository);
+exports.default = new RequestService(request_repository_1.requestRepository, user_friend_repository_1.default);

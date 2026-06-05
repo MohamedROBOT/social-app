@@ -6,7 +6,7 @@ class RedisCacheProvider {
     client;
     constructor(config) {
         this.client = (0, redis_1.createClient)(config);
-        this.client.connect().catch(err => console.log(err));
+        this.client.connect().catch((err) => console.log(err));
     }
     async del(key) {
         await this.client.del(key);

@@ -9,10 +9,10 @@ const auth_validation_1 = require("./auth.validation");
 const middleware_1 = require("../../middleware");
 const router = (0, express_1.Router)();
 router.post("/signin", async (req, res, next) => {
-    const tokens = await auth_service_1.default.login(req.body);
+    const tokens = await auth_service_1.default.signin(req.body);
     res.status(200).json({
         success: true,
-        message: "Login successful",
+        message: "Signin successful",
         ...tokens,
     });
 });

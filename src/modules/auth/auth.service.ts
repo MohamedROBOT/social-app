@@ -70,7 +70,7 @@ class AuthService {
         await setIntoCache(email, JSON.stringify(signupDTO), 3 * 24 * 60 * 60); // 3 days
     }
 
-    async login(loginDTO: SigninDTO) {
+    async signin(loginDTO: SigninDTO) {
         //check email existence in db
         const userExist = await this.userRepository.getOne({
             email: loginDTO.email,
@@ -100,10 +100,7 @@ class AuthService {
             email: userExist.email,
             role: userExist.role,
         });
-
         //set refresh token into redis
-
-
     }
 
     /**

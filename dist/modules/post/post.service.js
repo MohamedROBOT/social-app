@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostServices = void 0;
-const post_repository_1 = require("../../DB/models/post/post.repository");
+const post_repository_1 = __importDefault(require("../../DB/models/post/post.repository"));
 const common_1 = require("../../common");
 const user_reaction_repository_1 = require("../../DB/models/user-reaction/user-reaction.repository");
 const init_1 = __importDefault(require("../../common/notification/firebase/init"));
@@ -20,11 +20,19 @@ class PostServices {
         this.notificationProvider = notificationProvider;
         this.cacheProvider = cacheProvider;
     }
-    async getPost(postId) {
+    async get(postId) {
         return await this.postRepository.getOne({ _id: postId }, {}, { populate: [{ path: "userId" }] });
     }
     async create(createPostDTO, userId) {
         return await this.postRepository.create({ ...createPostDTO, userId });
+    }
+    async update(updatePostDTO, postId) {
+        //check post existence
+        //
+        return await this.postRepository.updateOne({ _id: postId }, updatePostDTO, { returnDocument: "after" });
+    }
+    async delete(postId) {
+        return await this.postRepository.deleteOne({ _id: postId });
     }
     async addReaction(addReactionDTO, userId) {
         //check post existence
@@ -76,4 +84,4 @@ class PostServices {
     }
 }
 exports.PostServices = PostServices;
-exports.default = new PostServices(new post_repository_1.PostRepository(), new user_reaction_repository_1.UserReactionRepository(), init_1.default, init_2.default);
+exports.default = new PostServices(post_repository_1.default, new user_reaction_repository_1.UserReactionRepository(), init_1.default, init_2.default);
