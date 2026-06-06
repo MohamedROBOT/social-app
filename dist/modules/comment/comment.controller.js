@@ -1,13 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const comment_service_1 = __importDefault(require("./comment.service"));
 const mongoose_1 = require("mongoose");
 const common_1 = require("../../common");
-const comment_repository_1 = require("../../DB/models/comment/comment.repository");
+const common_2 = require("../../common");
 const router = (0, express_1.Router)({ mergeParams: true });
 router.post("/add-reaction", 
 //authentication middleware
@@ -15,7 +11,7 @@ router.post("/add-reaction",
 //validation layer
 async (req, res, next) => {
     //use manual userId
-    await (0, common_1.addReaction)(req.body, new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"), comment_repository_1.commentRepository);
+    await (0, common_1.addReaction)(req.body, new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"), common_2.commentRepository);
     res.sendStatus(204);
 });
 //merge params
@@ -25,11 +21,11 @@ router.post("{/:parentId}",
 //validation layer
 async (req, res, next) => {
     //use manual userId
-    await comment_service_1.default.create(req.body, req.params, new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"));
+    await common_2.commentService.create(req.body, req.params, new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"));
     res.sendStatus(204);
 });
 router.get("/:postId{/:parentId}", async (req, res, next) => {
-    const comments = await comment_service_1.default.getAll(req.params);
+    const comments = await common_2.commentService.getAll(req.params);
     res.status(200).json({
         success: true,
         message: "Comments fetched successfully",
@@ -39,7 +35,7 @@ router.get("/:postId{/:parentId}", async (req, res, next) => {
     });
 });
 router.delete("/:id", async (req, res, next) => {
-    await comment_service_1.default.delete(new mongoose_1.Types.ObjectId(req.params.id), //type assertion 100% sure
+    await common_2.commentService.delete(new mongoose_1.Types.ObjectId(req.params.id), //type assertion 100% sure
     new mongoose_1.Types.ObjectId("69dfad1d0be24b44e159fa94"));
     return res.sendStatus(204);
 });

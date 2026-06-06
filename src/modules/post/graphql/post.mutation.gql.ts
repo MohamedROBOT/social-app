@@ -5,7 +5,6 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from "graphql";
-import postService from "../post.service";
 import { PostGQLType } from "./post.type.gql";
 import { IPost } from "../../../common";
 import { CreatePostDTO } from "../post.dto";
@@ -13,6 +12,7 @@ import { Types } from "mongoose";
 import type { Request } from "express";
 import { isAuthGQL, isValidGQL } from "../../../middleware";
 import { createPostSchema } from "../post.validation";
+import { postService } from "../../../common/DI/services";
 
 export const postGQLMutation = {
   addPost: {

@@ -1,6 +1,7 @@
 import nodemailer, { Transporter } from "nodemailer";
 import { IMailProvider } from "../mail.interface";
 import { MAIL_EMAIL, MAIL_PASSWORD } from "../../../config";
+import { injectable } from "tsyringe";
 //we represent the object with interface
 interface NodeMailerConfig {
   service: string;
@@ -8,24 +9,23 @@ interface NodeMailerConfig {
   port: number;
   auth: { user: string; pass: string };
 }
-
+@injectable()
 //low level module that implements abstraction
 export class NodeMailerProvider implements IMailProvider {
   private transporter: Transporter;
-  constructor(config: NodeMailerConfig) {
+  constructor() {
     this.transporter = nodemailer.createTransport({
-      service: config.service,
-      host: config.host,
-      port: config.port,
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
       auth: {
-        user: config.auth.user,
-        pass: config.auth.pass,
+        user: MAIL_EMAIL,
+        pass: MAIL_PASSWORD,
       },
     });
   }
 
   async send(to: string, subject: string, html: string): Promise<void> {
-    await this.transporter.sendMail({to,subject,html})
+    await this.transporter.sendMail({ to, subject, html });
   }
 }
-

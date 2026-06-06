@@ -1,18 +1,18 @@
 import { Types } from "mongoose";
-import { ICloudProvider } from "../../common/cloud/cloud.interface";
-import s3CloudProvider from "../../common/cloud/s3/init";
-import userRepository, {
-  UserRepository,
-} from "../../DB/models/user/user.repository";
 import { NotFoundException } from "../../common";
-import userFriendRepository, {
-  UserFriendRepository,
-} from "../../DB/models/user-friend/user-friend.repository";
-
-class UserService {
+import { ICloudProvider } from "../../common/cloud/cloud.interface";
+import { UserFriendRepository } from "../../DB/models/user-friend/user-friend.repository";
+import { UserRepository } from "../../DB/models/user/user.repository";
+import { inject, injectable } from "tsyringe";
+import { TOKENS } from "../../common/DI/tokens";
+@injectable()
+export class UserService {
   constructor(
+    @inject(TOKENS.S3CloudProvider)
     private readonly cloudProvider: ICloudProvider,
+    @inject(TOKENS.UserRepository)
     private readonly userRepository: UserRepository,
+    @inject(TOKENS.UserFriendRepository)
     private readonly userFriendRepository: UserFriendRepository,
   ) {}
 
@@ -37,19 +37,15 @@ class UserService {
   async profile(userId: Types.ObjectId) {
     const user = await this.userRepository.getOne({ _id: userId });
     //you might be the sender (and he accept) or receiver (incase you accept)
-    const friends = await this.userFriendRepository.getAll({
-      $or: [{ user: userId }, { friend: userId }],
-    }, {
-
-    },{populate:[{path:"user"},{path:"friend"}]});
+    const friends = await this.userFriendRepository.getAll(
+      {
+        $or: [{ user: userId }, { friend: userId }],
+      },
+      {},
+      { populate: [{ path: "user" }, { path: "friend" }] },
+    );
     //get groups
     //groups
-    return {user, friends}
+    return { user, friends };
   }
 }
-
-export default new UserService(
-  s3CloudProvider,
-  userRepository,
-  userFriendRepository,
-);

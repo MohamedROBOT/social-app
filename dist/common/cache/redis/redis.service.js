@@ -2,10 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RedisCacheProvider = void 0;
 const redis_1 = require("redis");
+const config_1 = require("../../../config");
 class RedisCacheProvider {
     client;
-    constructor(config) {
-        this.client = (0, redis_1.createClient)(config);
+    constructor() {
+        this.client = (0, redis_1.createClient)({
+            url: config_1.DB_REDIS
+        });
         this.client.connect().catch((err) => console.log(err));
     }
     async del(key) {

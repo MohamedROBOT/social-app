@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
@@ -21,7 +23,6 @@ import {
   userRouter,
 } from "./modules";
 import { RealtimeGateway } from "./common/realtime-gateway/realtime.gateway";
-
 const pipelinePromise = promisify(pipeline);
 
 const bootstrap = async () => {

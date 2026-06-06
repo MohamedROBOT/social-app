@@ -1,15 +1,24 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostServices = void 0;
-const post_repository_1 = __importDefault(require("../../DB/models/post/post.repository"));
+exports.PostService = void 0;
+const tsyringe_1 = require("tsyringe");
 const common_1 = require("../../common");
+const post_repository_1 = require("../../DB/models/post/post.repository");
 const user_reaction_repository_1 = require("../../DB/models/user-reaction/user-reaction.repository");
-const init_1 = __importDefault(require("../../common/notification/firebase/init"));
-const init_2 = __importDefault(require("../../common/cache/redis/init"));
-class PostServices {
+const tokens_1 = require("../../common/DI/tokens");
+let PostService = class PostService {
     postRepository;
     userReactionRepository;
     notificationProvider;
@@ -29,7 +38,9 @@ class PostServices {
     async update(updatePostDTO, postId) {
         //check post existence
         //
-        return await this.postRepository.updateOne({ _id: postId }, updatePostDTO, { returnDocument: "after" });
+        return await this.postRepository.updateOne({ _id: postId }, updatePostDTO, {
+            returnDocument: "after",
+        });
     }
     async delete(postId) {
         return await this.postRepository.deleteOne({ _id: postId });
@@ -82,6 +93,14 @@ class PostServices {
         });
         return;
     }
-}
-exports.PostServices = PostServices;
-exports.default = new PostServices(post_repository_1.default, new user_reaction_repository_1.UserReactionRepository(), init_1.default, init_2.default);
+};
+exports.PostService = PostService;
+exports.PostService = PostService = __decorate([
+    (0, tsyringe_1.injectable)(),
+    __param(0, (0, tsyringe_1.inject)(tokens_1.TOKENS.PostRepository)),
+    __param(1, (0, tsyringe_1.inject)(tokens_1.TOKENS.UserReactionRepository)),
+    __param(2, (0, tsyringe_1.inject)(tokens_1.TOKENS.FirebasePushNotificationProvider)),
+    __param(3, (0, tsyringe_1.inject)(tokens_1.TOKENS.RedisCacheProvider)),
+    __metadata("design:paramtypes", [post_repository_1.PostRepository,
+        user_reaction_repository_1.UserReactionRepository, Object, Object])
+], PostService);

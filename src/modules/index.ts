@@ -1,6 +1,12 @@
-export {default as authRouter} from "./auth/auth.controller"
-export {default as commentRouter} from "./comment/comment.controller"
-export {default as postRouter} from "./post/post.controller"
-export {default as requestRouter} from "./request/request.controller"
-export {default as userRouter} from "./user/user.controller"
-export {default as chatRouter} from "./chat/chat.controller"
+export { default as authRouter } from "./auth/auth.controller";
+export { default as commentRouter } from "./comment/comment.controller";
+export { default as postRouter } from "./post/post.controller";
+export { default as requestRouter } from "./request/request.controller";
+export { default as userRouter } from "./user/user.controller";
+export { default as chatRouter } from "./chat/chat.controller";
+export { AuthService } from "./auth/auth.service";
+export { ChatService } from "./chat/chat.service";
+export { CommentService } from "./comment/comment.service";
+export { PostService } from "./post/post.service";
+export { RequestService } from "./request/request.service";
+export { UserService } from "./user/user.service";

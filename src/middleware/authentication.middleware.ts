@@ -2,8 +2,6 @@ import type { Response, NextFunction, Request } from "express";
 import { BadRequestException, verifyToken } from "../common";
 import { JWT_ACCESS_SECRET } from "../config";
 import { JwtPayload } from "jsonwebtoken";
-import userService from "../modules/user/user.service";
-import { Types } from "mongoose";
 
 export const isAuthenticated =async (
   req: Request,

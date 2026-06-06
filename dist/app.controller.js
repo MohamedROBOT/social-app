@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("reflect-metadata");
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const express_2 = require("graphql-http/lib/use/express");
@@ -67,6 +68,7 @@ const bootstrap = async () => {
     app.use("/comment", modules_1.commentRouter);
     app.use("/request", modules_1.requestRouter);
     app.use("/user", modules_1.userRouter);
+    app.use("/chat", modules_1.chatRouter);
     //note: error handle must be the last middleware in the stack because it will catch any error thrown from previous middlewares or routes
     //global error handler middleware
     app.use((error, req, res, next) => {
@@ -80,6 +82,6 @@ const bootstrap = async () => {
     });
     const server = app.listen(port, () => console.log(`App is listen on port ${port}`));
     const realtimeGateway = new realtime_gateway_1.RealtimeGateway(server);
-    const io = realtimeGateway.io;
+    realtimeGateway.establishConnection();
 };
 exports.default = bootstrap;

@@ -20,3 +20,9 @@
 3. Check connection between both FE and BE
 4. integrate cache provider to assign each socketid to specific user and store it
 5. remove socketId from caching when disconnect
+
+
+--payment
+1. Naive Approach
+2. Idempotency Key
+3. 

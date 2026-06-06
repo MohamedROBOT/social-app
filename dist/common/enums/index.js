@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SYS_USER_RELATION = exports.ON_MODEL = exports.SYS_REACTION = exports.SYS_PROVIDER = exports.SYS_GENDER = exports.SYS_ROLE = void 0;
+exports.SYS_CHAT_TYPE = exports.SYS_USER_RELATION = exports.ON_MODEL = exports.SYS_REACTION = exports.SYS_PROVIDER = exports.SYS_GENDER = exports.SYS_ROLE = void 0;
 var SYS_ROLE;
 (function (SYS_ROLE) {
     SYS_ROLE[SYS_ROLE["user"] = 0] = "user";
@@ -40,3 +40,8 @@ var SYS_USER_RELATION;
     SYS_USER_RELATION["father"] = "father";
     SYS_USER_RELATION["mother"] = "mother";
 })(SYS_USER_RELATION || (exports.SYS_USER_RELATION = SYS_USER_RELATION = {}));
+var SYS_CHAT_TYPE;
+(function (SYS_CHAT_TYPE) {
+    SYS_CHAT_TYPE[SYS_CHAT_TYPE["private"] = 0] = "private";
+    SYS_CHAT_TYPE[SYS_CHAT_TYPE["group"] = 1] = "group";
+})(SYS_CHAT_TYPE || (exports.SYS_CHAT_TYPE = SYS_CHAT_TYPE = {}));

@@ -1,5 +1,5 @@
 import { PostGQLType } from "./post.type.gql";
-import postService from "../post.service";
+import { postService } from "../../../common/DI/services";
 import { Types } from "mongoose";
 import { GraphQLID } from "graphql";
 

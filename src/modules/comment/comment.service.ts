@@ -9,11 +9,13 @@ import {
   UnAuthorizedException,
 } from "../../common";
 import { CommentRepository } from "../../DB/models/comment/comment.repository";
-
-class CommentService {
+import { inject, injectable } from "tsyringe";
+import { TOKENS } from "../../common/DI/tokens";
+@injectable()
+export class CommentService {
   constructor(
-    private readonly postRepository: PostRepository,
-    private readonly commentRepository: CommentRepository,
+    @inject(TOKENS.PostRepository) private readonly postRepository: PostRepository,
+    @inject(TOKENS.CommentRepository) private readonly commentRepository: CommentRepository,
   ) {}
 
   async create(
@@ -87,7 +89,3 @@ async getOne (commentId: Types.ObjectId){
   }
 }
 
-export default new CommentService(
-  new PostRepository(),
-  new CommentRepository(),
-);

@@ -1,22 +1,22 @@
 import { Types } from "mongoose";
 import {
-  requestRepository,
-  RequestRepository,
-} from "../../DB/models/request/request.repository";
-import {
   BadRequestException,
   NotFoundException,
   UnAuthorizedException,
 } from "../../common";
-import userFriendRepository, {
-  
+import {
+  RequestRepository
+} from "../../DB/models/request/request.repository";
+import {
   UserFriendRepository,
 } from "../../DB/models/user-friend/user-friend.repository";
-
-class RequestService {
+import { inject, injectable } from "tsyringe";
+import { TOKENS } from "../../common/DI/tokens";
+@injectable()
+export class RequestService {
   constructor(
-    private readonly requestRepository: RequestRepository,
-    private readonly userFriendRepository: UserFriendRepository,
+ @inject(TOKENS.RequestRepository)   private readonly requestRepository: RequestRepository,
+    @inject(TOKENS.UserFriendRepository) private readonly userFriendRepository: UserFriendRepository,
   ) {}
 
   /*
@@ -163,5 +163,3 @@ class RequestService {
     if (deletedCount === 0) throw new NotFoundException("You are not friends");
   }
 }
-//we will apply dependency injection
-export default new RequestService(requestRepository, userFriendRepository);

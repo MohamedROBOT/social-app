@@ -1,13 +1,14 @@
 import { ICacheProvider } from "../cache.interface";
 import { Promise } from "mongoose";
 import { createClient, RedisClientType } from "redis";
-interface RedisConfig {
-  url: string;
-}
+import { DB_REDIS } from "../../../config";
+
 export class RedisCacheProvider implements ICacheProvider {
   private client: RedisClientType;
-  constructor(config: RedisConfig) {
-    this.client = createClient(config);
+  constructor() {
+    this.client = createClient({
+    url: DB_REDIS
+});
     this.client.connect().catch((err) => console.log(err));
   }
 

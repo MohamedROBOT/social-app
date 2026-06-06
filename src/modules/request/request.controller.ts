@@ -1,8 +1,8 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
-import requestService from "./request.service";
 import { Types } from "mongoose";
 import { isAuthenticated } from "../../middleware";
+import { requestService } from "../../common/";
 const router = Router();
 
 router.post(

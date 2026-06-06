@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { multerUploadFile } from "../../common";
-import userService from "./user.service";
 import { Types } from "mongoose";
 import { isAuthenticated } from "../../middleware";
+import { userService } from "../../common/";
 
 const router = Router();
 //upload profile picture

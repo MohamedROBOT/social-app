@@ -1,12 +1,14 @@
 import { Types } from "mongoose";
-import chatRepository, { ChatRepository } from "../../DB/models/chat/chat.repository";
 import { NotFoundException } from "../../common";
-import messageRepository, { MessageRepository } from "../../DB/models/message/message.repository";
-
-class ChatService {
+import { ChatRepository } from "../../DB/models/chat/chat.repository";
+import { MessageRepository } from "../../DB/models/message/message.repository";
+import { inject, injectable } from "tsyringe";
+import { TOKENS } from "../../common/DI/tokens";
+@injectable()
+export class ChatService {
   constructor(
-    private readonly chatRepository: ChatRepository,
-    private readonly messageRepository: MessageRepository,
+   @inject(TOKENS.ChatRepository) private readonly chatRepository: ChatRepository,
+    @inject(TOKENS.MessageRepository) private readonly messageRepository: MessageRepository,
   ) {}
   async getChat(chatId: Types.ObjectId, userId: Types.ObjectId) {
     const chat = await this.chatRepository.getOne({
@@ -32,7 +34,3 @@ class ChatService {
 }
 
 
-export default new ChatService(
-    chatRepository,
-    messageRepository
-)

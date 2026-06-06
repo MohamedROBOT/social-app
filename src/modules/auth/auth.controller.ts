@@ -1,7 +1,8 @@
 import { type NextFunction, Request, type Response, Router } from "express";
-import authService from "./auth.service";
 import { signupSchema } from "./auth.validation";
 import { isValid } from "../../middleware";
+import { authService } from "../../common";
+
 const router = Router();
 
 router.post(

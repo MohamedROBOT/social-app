@@ -2,29 +2,23 @@ import {DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client} from 
 import {ICloudProvider} from "../cloud.interface";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 import {Upload} from '@aws-sdk/lib-storage'
-import {BUCKET_NAME} from "../../../config";
+import {BUCKET_ACCESS_KEY_ID, BUCKET_NAME, BUCKET_REGION, BUCKET_SECRET_ACCESS_KEY} from "../../../config";
+import { injectable } from "tsyringe";
 
-interface S3Config {
-    region: string;
-    credentials: {
-        accessKeyId: string;
-        secretAccessKey: string;
-    };
 
-}
-
+@injectable()
 export class S3CloudProvider implements ICloudProvider {
     private readonly client: S3Client;
 
-    constructor(config: S3Config) {
+    constructor() {
         this.client = new S3Client({
-            region: config.region,
-            credentials: {
-                accessKeyId: config.credentials.accessKeyId,
-                secretAccessKey: config.credentials.secretAccessKey,
-            },
+  region: BUCKET_REGION,
+  credentials: {
+    accessKeyId: BUCKET_ACCESS_KEY_ID,
+    secretAccessKey: BUCKET_SECRET_ACCESS_KEY,
+  },
 
-        });
+});
     }
 
     async deleteFile(key: string): Promise<boolean | undefined> {

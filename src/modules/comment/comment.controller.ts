@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
-import commentService from "./comment.service";
 import { Types } from "mongoose";
 import { addReaction } from "../../common";
-import { commentRepository } from "../../DB/models/comment/comment.repository";
+import { commentRepository, commentService } from "../../common";
 
 const router = Router({ mergeParams: true });
 

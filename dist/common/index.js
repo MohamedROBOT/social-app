@@ -21,3 +21,4 @@ __exportStar(require("./types/user.type"), exports);
 __exportStar(require("./constant"), exports);
 __exportStar(require("./dto"), exports);
 __exportStar(require("./service"), exports);
+__exportStar(require("./DI/"), exports);

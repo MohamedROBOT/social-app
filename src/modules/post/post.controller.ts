@@ -1,15 +1,14 @@
 import { NextFunction, Request, Response, Router } from "express";
-import postService from "./post.service";
 import { Types } from "mongoose";
 
 import { isValid } from "../../middleware";
 import { default as commentRouter } from "../comment/comment.controller";
 import { createPostSchema } from "./post.validation";
+import { postService } from "../../common";
 const router = Router(); //sub application
 
 //redirect to another sub application (comment)
 router.use("/:postId/comment", commentRouter);
-
 
 router.post(
   "/",
@@ -29,12 +28,18 @@ router.post(
   },
 );
 
-router.post("/reaction", async (req: Request, res: Response, next:NextFunction) => {
-   await postService.addReaction(req.body, new Types.ObjectId("69dfad1d0be24b44e159fa94"));
-   //204 refer for no content
-   return res.status(204).json({
+router.post(
+  "/reaction",
+  async (req: Request, res: Response, next: NextFunction) => {
+    await postService.addReaction(
+      req.body,
+      new Types.ObjectId("69dfad1d0be24b44e159fa94"),
+    );
+    //204 refer for no content
+    return res.status(204).json({
       success: true,
       message: "Reaction added successfully",
-   })
-});
+    });
+  },
+);
 export default router;

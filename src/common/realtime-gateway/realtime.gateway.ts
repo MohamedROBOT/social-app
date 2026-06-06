@@ -3,12 +3,13 @@ import { Server as HttpServer } from "node:http";
 import { verifyToken } from "../utils";
 import { JWT_ACCESS_SECRET } from "../../config";
 import { ICacheProvider } from "../cache/cache.interface";
-import redisCacheProvider from "../cache/redis/init"
+import { inject } from "tsyringe";
+import { redisCacheProvider, TOKENS } from "../DI";
 export class RealtimeGateway {
   private _io: Server;
   private readonly cacheProvider:ICacheProvider
   constructor(server: HttpServer) {
-     this.cacheProvider = redisCacheProvider
+    this.cacheProvider = redisCacheProvider
     this._io = new Server(server, { cors: { origin: "*" } });
   }
 
